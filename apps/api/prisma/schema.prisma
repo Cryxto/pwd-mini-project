@@ -28,7 +28,7 @@ model User {
   password    String    @db.VarChar(255)
   email       String    @unique @db.VarChar(255)
   middleName  String?   @db.VarChar(255)
-  referalCode String?   @db.VarChar(255)
+  referalCode String?   @unique @db.VarChar(255)
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   deletedAt   DateTime?
