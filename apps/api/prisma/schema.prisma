@@ -19,3 +19,32 @@ model Sample {
 
   @@map("samples") // if you want to use snake_case format
 }
+
+model User {
+  id          BigInt    @id @default(autoincrement())
+  username    String    @db.VarChar(255)
+  firstName   String    @db.VarChar(255)
+  lastName    String    @db.VarChar(255)
+  password    String    @db.VarChar(255)
+  email       String    @unique @db.VarChar(255)
+  middleName  String?   @db.VarChar(255)
+  referalCode String?   @db.VarChar(255)
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  deletedAt   DateTime?
+  createdBy   BigInt?
+  updatedBy   BigInt?
+  deletedBy   BigInt?
+
+  createdByUser User? @relation("createdByRelation", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelation", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelation", fields: [deletedBy], references: [id])
+
+  createdUsers User[] @relation("createdByRelation")
+  updatedUsers User[] @relation("updatedByRelation")
+  deletedUsers User[] @relation("deletedByRelation")
+
+  @@index([username])
+  @@index([email])
+  @@map("users")
+}
