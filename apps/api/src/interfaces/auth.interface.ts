@@ -12,9 +12,9 @@ export interface AuthCompleteInterface extends AuthInputInterface {
   createdAt ?: Date | string,
   deletedAt ?: Date | string,
   updatedAt ?: Date | string,
-  createdBy ?: bigint,
-  updatedBy ?: bigint,
-  deletedBy ?: bigint,
+  createdBy ?: number,
+  updatedBy ?: number,
+  deletedBy ?: number,
 }
 
 export interface AuthResultInterface {
@@ -22,4 +22,15 @@ export interface AuthResultInterface {
   email: string;
   createdAt: Date;
   updatedAt: Date | null;
+  referalCode: string | null
+}
+
+export interface AuthJWTInterface {
+  id:number|string;
+  username: string;
+  email: string;
+  referalCode: string;
+  firstName : string;
+  lastName : string;
+  middleName ?: string;
 }

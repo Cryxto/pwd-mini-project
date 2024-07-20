@@ -8,6 +8,7 @@ import express, {
   Router,
 } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser'
 import { PORT } from './config';
 // import { SampleRouter } from './routers/sample.router';
 import { AuthRouter } from './routers/auth.router';
@@ -24,6 +25,7 @@ export default class App {
 
   private configure(): void {
     this.app.use(cors());
+    this.app.use(cookieParser());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
   }

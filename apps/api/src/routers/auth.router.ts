@@ -18,9 +18,14 @@ export class AuthRouter {
     // this.router.get('/', this.authController.getSampleData);
     // this.router.get('/:id', this.authController.getSampleDataById);
     this.router.post(
-      '/register',
-      this.authMiddleware.registerValidation,
-      this.authController.register,
+      '/sign-up',
+      this.authMiddleware.signUpValidation,
+      this.authController.signUp,
+    );
+    this.router.post(
+      '/sign-in',
+      this.authMiddleware.signInValidation,
+      this.authController.sigIn,
     );
   }
 
