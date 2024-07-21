@@ -17,12 +17,11 @@ export default class AuthMiddleware {
       .then(() => next())
       .catch((err) => {
         err.message;
-        return res
-          .send({
-            code: 400,
-            message: err.message,
-          })
-          .status(400);
+        return res.status(400).send({
+          code: 400,
+          error: err,
+          body : req.body
+        });
       });
 
     // next();
@@ -33,16 +32,14 @@ export default class AuthMiddleware {
     res: Response,
     next: NextFunction,
   ): Promise<void | Response> {
-    await SignInSchema.validate(req.body)
+    await SignInSchema.validate(req.body, { abortEarly: false })
       .then(() => next())
       .catch((err) => {
         err.message;
-        return res
-          .send({
-            code: 400,
-            message: err.message,
-          })
-          .status(400);
+        return res.status(400).send({
+          code: 400,
+          error: err,
+        });
       });
 
     // next();
@@ -54,8 +51,8 @@ export default class AuthMiddleware {
     next: NextFunction,
   ): Promise<void | Response> {
     if (req.cookies.verification && req.cookies.auth_token) {
-      return res.send({cookies: req.cookies})
+      return res.send({ cookies: req.cookies });
     }
-    return res.status(401).send({message:"unauthorized"})
+    return res.status(401).send({ message: 'unauthorized' });
   }
 }

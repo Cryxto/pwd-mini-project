@@ -25,7 +25,13 @@ const isPasswordValid = async (password: string, hashedPassword: string) => {
 export let SignUpSchema = object({
   firstName: string().required(),
   lastName: string().required(),
-  username: string().required(),
+  username: string().required().test('user-exist', 'User exist', async (value) => {
+    if (value) {
+      const user = await getUserByIdentifier(value);
+      return !user; // Return true if user does not exist, false if user exists
+    }
+    return false;
+  }),
   email: string()
     .email()
     .required()
