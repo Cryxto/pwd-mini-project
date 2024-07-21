@@ -27,6 +27,10 @@ export class AuthRouter {
       this.authMiddleware.signInValidation,
       this.authController.sigIn,
     );
+    this.router.get(
+      '/test',
+      this.authMiddleware.shouldSignIn,
+    );
   }
 
   getRouter(): Router {

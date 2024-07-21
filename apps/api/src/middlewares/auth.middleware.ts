@@ -1,6 +1,5 @@
 import { SignInSchema, SignUpSchema } from '@/validations/auth.validation';
 import { NextFunction, Request, Response } from 'express';
-import { ValidationError } from 'yup';
 
 export default class AuthMiddleware {
   /**
@@ -35,17 +34,28 @@ export default class AuthMiddleware {
     next: NextFunction,
   ): Promise<void | Response> {
     await SignInSchema.validate(req.body)
-    .then(() => next())
-    .catch((err) => {
-      err.message;
-      return res
-        .send({
-          code: 400,
-          message: err.message,
-        })
-        .status(400);
-    });
+      .then(() => next())
+      .catch((err) => {
+        err.message;
+        return res
+          .send({
+            code: 400,
+            message: err.message,
+          })
+          .status(400);
+      });
 
     // next();
+  }
+
+  public async shouldSignIn(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void | Response> {
+    if (req.cookies.verification && req.cookies.auth_token) {
+      return res.send({cookies: req.cookies})
+    }
+    return res.status(401).send({message:"unauthorized"})
   }
 }
