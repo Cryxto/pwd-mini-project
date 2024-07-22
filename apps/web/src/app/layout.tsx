@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/ReactToastify.css';
 
 // const inter = Inter({ subsets: ['latin'] });
 const poppins = Poppins({ subsets: ['latin'], weight: '400' });
@@ -18,15 +20,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className={poppins.className} >
-        <div className="w-full flex items-center justify-center flex-col max-w-full overflow-x-hidden">
+    <html
+      lang="en"
+      className="scroll-smooth"
+      data-theme="pastel"
+      suppressHydrationWarning
+    >
+      <body className={poppins.className}>
+        <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100">
           <Header />
-          <main className="flex flex-1 flex-col w-full min-h-screen py-20 bg-slate-200">
+          <main className="flex flex-1 flex-col w-full min-h-screen py-20 ">
             {children}
           </main>
           <Footer />
         </div>
+        <ToastContainer pauseOnFocusLoss={false} />
       </body>
     </html>
   );

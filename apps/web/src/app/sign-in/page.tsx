@@ -1,9 +1,11 @@
-import { SignIn } from "@/components/SignIn";
+// "use client"
+"use server"
+import { SignIn } from '@/components/SignIn';
 
 export default async function Page() {
-  console.log('NADNASDASDASD');
-  
   return (
-    <SignIn/>
+    <>
+      <SignIn />
+    </>
   );
 }

@@ -1,24 +1,57 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { FormEvent, useState } from 'react';
+import { signInProceed } from '@/actions';
+import { Bounce, toast } from 'react-toastify';
+import { useSafeBack } from '@/hooks';
 
 export function SignIn() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const { push } = useRouter();
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [status, setStatus] = useState('');
+  const safeBack = useSafeBack()
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      await axios.post(
-        '/api/backend/auth/sign-in',
-        { identifier, password },
-        { withCredentials: true },
-      );
-      push('/');
-    } catch (error) {
-      console.error('Error logging in:', error);
+    const res: boolean | Array<any> = await signInProceed({ identifier, password });
+
+    setStatus('pending');
+    if (res === true) {
+      toast.success('Login success!', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Bounce,
+      });
+      setStatus('success');
+
+      setTimeout(() => safeBack(), 2000);
+    } else {
+      setStatus('fail');
+      let error = function () {
+        return (
+          <ul className='ml-5 list-disc'>
+            {res.map((e: string, i:number) => (
+              <li key={i}>{e}</li>
+            ))}
+          </ul>
+        );
+      };
+      toast.error(error, {
+        position: 'top-center',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Bounce,
+      });
     }
   };
 
@@ -40,6 +73,7 @@ export function SignIn() {
             </svg>
             <input
               type="text"
+              disabled={status === 'success' ? true : false}
               className="grow"
               placeholder="Username or identifier"
               value={identifier}
@@ -63,14 +97,22 @@ export function SignIn() {
             <input
               type="password"
               className="grow"
+              disabled={status === 'success' ? true : false}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </label>
-          <button type="submit" className="btn btn-outline btn-info btn-block">
+          <button disabled={status==='success'?true:false} type="submit" className="btn btn-neutral btn-block" >
             Sign In
+            {status === 'pending' ? (
+              <span className="loading loading-spinner"></span>
+            ) : status === 'success' ? (
+              ' Success'
+            ) : (
+              ''
+            )}
           </button>
         </div>
       </form>
