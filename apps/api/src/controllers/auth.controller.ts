@@ -53,18 +53,20 @@ export class AuthController {
     //   sameSite:"lax"
     // })
     return res
-      .cookie('auth_token', bearerAuth, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 5 * 1000,
-        sameSite: 'lax',
-      })
-      .cookie('verification', require('crypto').randomBytes(48).toString('base64url'),{
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 5 * 1000,
-        sameSite: 'strict',
-      })
+      // .cookie('auth_token', bearerAuth, {
+      //   httpOnly: true,
+      //   maxAge: 24 * 60 * 60 * 5 * 1000,
+      //   sameSite: 'lax',
+      // })
+      // .cookie('verification', require('crypto').randomBytes(48).toString('base64url'),{
+      //   httpOnly: true,
+      //   maxAge: 24 * 60 * 60 * 5 * 1000,
+      //   sameSite: 'strict',
+      // })
       .send({
         // token: bearerAuth || 'dsad',
+        auth_token: bearerAuth,
+        verification: require('crypto').randomBytes(48).toString('base64url'),
         code: 200,
         ok: true,
       })
