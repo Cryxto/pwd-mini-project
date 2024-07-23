@@ -78,6 +78,21 @@ model User {
   updatedFromOrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("updatedByRelationInOrganizationRoleHavePermission")
   deletedFromOrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("deletedByRelationInOrganizationRoleHavePermission")
 
+  UserPointHistory    UserPointHistory[] @relation("userPointHistory")
+  RefererPointHistory UserPointHistory[] @relation("refererPointHistory")
+
+  createdFromUserPointHistory UserPointHistory[] @relation("createdByRelationInUserPointHistory")
+  updatedFromUserPointHistory UserPointHistory[] @relation("updatedByRelationInUserPointHistory")
+  deletedFromUserPointHistory UserPointHistory[] @relation("deletedByRelationInUserPointHistory")
+
+  createdFromCoupon Coupon[] @relation("createdByRelationInCoupon")
+  updatedFromCoupon Coupon[] @relation("updatedByRelationInCoupon")
+  deletedFromCoupon Coupon[] @relation("deletedByRelationInCoupon")
+
+  createdFromUsersCoupon UsersCoupon[] @relation("createdByRelationInUsersCoupon")
+  updatedFromUsersCoupon UsersCoupon[] @relation("updatedByRelationInUsersCoupon")
+  deletedFromUsersCoupon UsersCoupon[] @relation("deletedByRelationInUsersCoupon")
+
   @@index([username])
   @@index([email])
   @@index([referalCode])
@@ -106,6 +121,7 @@ model Permission {
   OrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("organizationPermissionRelation")
 
   @@index([id])
+  @@index([name])
   @@map("permissions")
 }
 
@@ -132,6 +148,7 @@ model Role {
   // organizationId Int?          @db.UnsignedInt
   // Organization   Organization? @relation("roleInOrganization", fields: [organizationId], references: [id])
 
+  @@index([name])
   @@index([id])
   @@map("roles")
 }
@@ -202,8 +219,10 @@ model Organization {
   createdByUser User? @relation("createdByRelationInUserHasRole", fields: [createdBy], references: [id])
   deletedByUser User? @relation("deletedByRelationInUserHasRole", fields: [deletedBy], references: [id])
 
-  // Role Role[] @relation("roleInOrganization")
+  OrganizationRole OrganizationRole[] @relation("organizationRole")
+  Coupon           Coupon[]           @relation("coupunIssuedBy")
 
+  @@index([name])
   @@index([id])
   @@map("organizations")
 }
@@ -227,6 +246,10 @@ model OrganizationRole {
   UserHaveRoleOnOrganization     UserHaveRoleOnOrganization[]     @relation("userHaveOrganizationRole")
   OrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("organizationRoleRelation")
 
+  organizationId Int?          @db.UnsignedInt
+  Organization   Organization? @relation("organizationRole", fields: [organizationId], references: [id])
+
+  @@index([name])
   @@index([id])
   @@map("organization_roles")
 }
@@ -279,3 +302,82 @@ model OrganizationRoleHavePermission {
   @@map("organization_role_has_permissions")
 }
 
+model UserPointHistory {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  userId Int?  @db.UnsignedInt
+  User   User? @relation("userPointHistory", fields: [userId], references: [id])
+
+  refererId Int?  @db.UnsignedInt
+  Referer   User? @relation("refererPointHistory", fields: [refererId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInUserPointHistory", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInUserPointHistory", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInUserPointHistory", fields: [deletedBy], references: [id])
+
+  // for future add related transaction
+  @@index([id])
+  @@map("user_point_histories")
+}
+
+model Coupon {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  code String? @unique @db.VarChar(255)
+  unit String? @db.VarChar(255)
+
+  daysCouponAlive Int?
+  // expiredAt   DateTime?
+  title           String? @db.VarChar(255)
+  description     String? @db.LongText
+  quota           Int?
+
+  issuedBy     Int?          @db.UnsignedInt
+  Organization Organization? @relation("coupunIssuedBy", fields: [issuedBy], references: [id])
+  UsersCoupon  UsersCoupon[] @relation("usersCoupon")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInCoupon", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInCoupon", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInCoupon", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@index([code])
+  @@map("coupons")
+}
+
+model UsersCoupon {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  couponId Int?    @db.UnsignedInt
+  Coupon   Coupon? @relation("usersCoupon", fields: [couponId], references: [id])
+
+  expiredAt DateTime?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInUsersCoupon", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInUsersCoupon", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInUsersCoupon", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@map("users_coupons")
+}

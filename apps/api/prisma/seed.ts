@@ -23,64 +23,65 @@ async function main() {
     });
     const superUserUpdate = prisma.user.update({
       data: {
-        createdBy:1,
-      }, where: {id:1}
-    })
+        createdBy: 1,
+      },
+      where: { id: 1 },
+    });
 
     // Create permissions
     const permissions = prisma.permission.createMany({
       data: [
         {
-          id:1,
+          id: 1,
           name: 'superuser',
           displayName: 'Superuser',
           description: 'For system only',
           createdBy: 1,
         },
         {
-          id:2,
+          id: 2,
           name: 'ownership',
           displayName: 'Ownership',
           description: 'Organization ownership permission',
           createdBy: 1,
         },
         {
-          id:3,
+          id: 3,
           name: 'create_event',
           displayName: 'Create Event',
           description: 'Create event permission',
           createdBy: 1,
         },
         {
-          id:4,
+          id: 4,
           name: 'update_event',
           displayName: 'Update Event',
           description: 'Update event permission',
           createdBy: 1,
         },
         {
-          id:5,
+          id: 5,
           name: 'delete_event',
           displayName: 'Delete Event',
           description: 'Delete event permission',
           createdBy: 1,
         },
         {
-          id:6,
+          id: 6,
           name: 'view_event',
           displayName: 'View Event',
           description: 'View event permission',
           createdBy: 1,
         },
         {
-          id:7,
+          id: 7,
           name: 'access_event',
           displayName: 'Access Event',
           description: 'Access event permission',
           createdBy: 1,
         },
         {
-          id:8,
+          id: 8,
           name: 'event_attendee_privilege',
           displayName: 'Event Attendee',
           description: 'Event attendee privilege',
@@ -99,14 +100,14 @@ async function main() {
         RoleHavePermission: {
           createMany: {
             data: [
-              { permissionId: 1 }, // Superuser permission
-              { permissionId: 2 }, // Ownership permission
-              { permissionId: 3 }, // Create Event permission
-              { permissionId: 4 }, // Update Event permission
-              { permissionId: 5 }, // Delete Event permission
-              { permissionId: 6 }, // View Event permission
-              { permissionId: 7 }, // Access Event permission
-              { permissionId: 8 }, // Event Attendee privilege
+              { permissionId: 1, createdBy: 1 }, // Superuser permission
+              { permissionId: 2, createdBy: 1 }, // Ownership permission
+              { permissionId: 3, createdBy: 1 }, // Create Event permission
+              { permissionId: 4, createdBy: 1 }, // Update Event permission
+              { permissionId: 5, createdBy: 1 }, // Delete Event permission
+              { permissionId: 6, createdBy: 1 }, // View Event permission
+              { permissionId: 7, createdBy: 1 }, // Access Event permission
+              { permissionId: 8, createdBy: 1 }, // Event Attendee privilege
             ],
             skipDuplicates: true,
           },
@@ -159,29 +160,29 @@ async function main() {
       data: {
         userId: 1,
         roleId: 1, // Assuming Superuser Role ID is 1
-        createdBy:1
+        createdBy: 1,
       },
     });
 
     // Wait for all promises to complete before committing the transaction
     const [
       user,
+      updateSuperUser,
       permissionsResult,
       superuserRoleResult,
       ownerRoleResult,
       visitorRoleResult,
       organizationResult,
       roleAssignment,
-      updateSuperUser
     ] = await prisma.$transaction([
       superuser,
+      superUserUpdate,
       permissions,
       superuserRole,
       ownerRole,
       visitorRole,
       organization,
       assignSuperuserRole,
-      superUserUpdate,
     ]);
 
     console.log({
@@ -192,7 +193,7 @@ async function main() {
       visitorRoleResult,
       organizationResult,
       roleAssignment,
-      updateSuperUser
+      updateSuperUser,
     });
   } catch (e) {
     console.error(e);
