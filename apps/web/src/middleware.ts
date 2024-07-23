@@ -26,7 +26,7 @@ export async function middleware(req: NextRequest) {
     redirect: req.redirect,
     signal: req.signal,
   });
-  return NextResponse.next(modifiedRequest);
+  NextResponse.next(modifiedRequest);
 }
 
 export const config = {
