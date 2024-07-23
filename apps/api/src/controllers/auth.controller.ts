@@ -6,9 +6,12 @@ import { AuthJWTInterface } from '@/interfaces/auth.interface';
 
 export class AuthController {
   async signUp(req: Request, res: Response) {
+    if (req.body.referal) {
+      delete req.body.referal
+    }
     const createdUser = await authRepository.createUser(req.body);
     // console.log(createdUser);
-
+  
     if (createdUser.ok) {
       return res
         .send({
@@ -43,15 +46,6 @@ export class AuthController {
       },
     });
     const bearerAuth = await genJWT(user as AuthJWTInterface);
-    // res.cookie('authToken', `Bearer ${bearerAuth}`, {
-    //   httpOnly: true,
-    //   maxAge: 24 * 60 * 60 * 5 * 1000,
-    // });
-    // res.cookie('Authorization', bearerAuth, {
-    //   httpOnly: true,
-    //   maxAge: 24 * 60 * 60 * 5 * 1000,
-    //   sameSite:"lax"
-    // })
     return res
       // .cookie('auth_token', bearerAuth, {
       //   httpOnly: true,

@@ -9,7 +9,12 @@
     "serve": "cross-env NODE_ENV=production node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma": "npx prisma",
-    "migrate": "dotenv -e .env.development -- npx prisma migrate dev"
+    "migrate": "dotenv -e .env.development -- npx prisma migrate dev",
+    "migrate:clean": "dotenv -e \".env.development\" -- npx prisma migrate reset --skip-seed",
+    "migrate:seed": "dotenv -e \".env.development\" -- npx prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",

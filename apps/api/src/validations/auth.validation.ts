@@ -43,6 +43,7 @@ export let SignUpSchema = object({
     }),
   password: string().required(),
   middleName: string().optional(),
+  referal: string().optional()
 });
 
 export let SignInSchema = object({

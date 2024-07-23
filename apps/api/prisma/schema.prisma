@@ -29,20 +29,253 @@ model User {
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   deletedAt   DateTime?
-  createdBy   Int?      @db.UnsignedInt
-  updatedBy   Int?      @db.UnsignedInt
-  deletedBy   Int?      @db.UnsignedInt
 
-  createdByUser User? @relation("createdByRelation", fields: [createdBy], references: [id])
-  updatedByUser User? @relation("updatedByRelation", fields: [updatedBy], references: [id])
-  deletedByUser User? @relation("deletedByRelation", fields: [deletedBy], references: [id])
+  createdBy Int? @db.UnsignedInt
+  updatedBy Int? @db.UnsignedInt
+  deletedBy Int? @db.UnsignedInt
 
-  createdUsers User[] @relation("createdByRelation")
-  updatedUsers User[] @relation("updatedByRelation")
-  deletedUsers User[] @relation("deletedByRelation")
+  createdByUser User? @relation("createdByRelationInUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInUser", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInUser", fields: [deletedBy], references: [id])
+
+  createdUsers User[] @relation("createdByRelationInUser")
+  updatedUsers User[] @relation("updatedByRelationInUser")
+  deletedUsers User[] @relation("deletedByRelationInUser")
+
+  createdUsersFromPermission Permission[] @relation("createdByRelationInPermission")
+  updatedUsersFromPermission Permission[] @relation("updatedByRelationInPermission")
+  deletedUsersFromPermission Permission[] @relation("deletedByRelationInPermission")
+
+  createdUsersFromRole Role[] @relation("createdByRelationInRole")
+  updatedUsersFromRole Role[] @relation("updatedByRelationInRole")
+  deletedUsersFromRole Role[] @relation("deletedByRelationInRole")
+
+  createdUsersFromRoleHavePermission RoleHavePermission[] @relation("createdByRelationInRoleHavePermission")
+  updatedUsersFromRoleHavePermission RoleHavePermission[] @relation("updatedByRelationInRoleHavePermission")
+  deletedUsersFromRoleHavePermission RoleHavePermission[] @relation("deletedByRelationInRoleHavePermission")
+
+  updatedFromUserHaveRole UserHaveRole[] @relation("updatedByRelationInUserHasRole")
+  createdFromUserHaveRole UserHaveRole[] @relation("createdByRelationInUserHasRole")
+  deletedFromUserHaveRole UserHaveRole[] @relation("deletedByRelationInUserHasRole")
+
+  RoleHaveUser UserHaveRole[] @relation("roleHaveUser")
+  Organization Organization[] @relation("organizationOwnership")
+
+  createdFromOrganization Organization[] @relation("updatedByRelationInUserHasRole")
+  updatedFromOrganization Organization[] @relation("createdByRelationInUserHasRole")
+  deletedFromOrganization Organization[] @relation("deletedByRelationInUserHasRole")
+
+  createdFromOrganizationRole OrganizationRole[] @relation("createdByRelationInOrganizationRole")
+  updatedFromOrganizationRole OrganizationRole[] @relation("updatedByRelationInOrganizationRole")
+  deletedFromOrganizationRole OrganizationRole[] @relation("deletedByRelationInOrganizationRole")
+
+  createdFromUserHaveRoleOnOrganization UserHaveRoleOnOrganization[] @relation("updatedByRelationInOrganizationUserHasRole")
+  updatedFromUserHaveRoleOnOrganization UserHaveRoleOnOrganization[] @relation("createdByRelationInOrganizationUserHasRole")
+  deletedFromUserHaveRoleOnOrganization UserHaveRoleOnOrganization[] @relation("deletedByRelationInOrganizationUserHasRole")
+
+  UserHaveRoleOnOrganization                UserHaveRoleOnOrganization[]     @relation("organizationRoleHaveUser")
+  createdFromOrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("createdByRelationInOrganizationRoleHavePermission")
+  updatedFromOrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("updatedByRelationInOrganizationRoleHavePermission")
+  deletedFromOrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("deletedByRelationInOrganizationRoleHavePermission")
 
   @@index([username])
   @@index([email])
   @@index([referalCode])
+  @@index([id])
   @@map("users")
 }
+
+model Permission {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique @db.VarChar(255)
+  displayName String? @db.VarChar(255)
+  description String? @db.VarChar(255)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInPermission", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInPermission", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInPermission", fields: [deletedBy], references: [id])
+
+  roleHasPermission              RoleHavePermission[]             @relation("permissionRelation")
+  OrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("organizationPermissionRelation")
+
+  @@index([id])
+  @@map("permissions")
+}
+
+model Role {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique @db.VarChar(255)
+  displayName String? @db.VarChar(255)
+  description String? @db.VarChar(255)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInRole", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInRole", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInRole", fields: [deletedBy], references: [id])
+
+  RoleHavePermission RoleHavePermission[] @relation("roleRelation")
+  UserHaveRole       UserHaveRole[]       @relation("userHaveRole")
+
+  // organizationId Int?          @db.UnsignedInt
+  // Organization   Organization? @relation("roleInOrganization", fields: [organizationId], references: [id])
+
+  @@index([id])
+  @@map("roles")
+}
+
+model RoleHavePermission {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  permissionId Int?        @db.UnsignedInt
+  Permission   Permission? @relation("permissionRelation", fields: [permissionId], references: [id])
+
+  roleId Int?  @db.UnsignedInt
+  Role   Role? @relation("roleRelation", fields: [roleId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInRoleHavePermission", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInRoleHavePermission", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInRoleHavePermission", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@map("role_has_permissions")
+}
+
+model UserHaveRole {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  roleId       Int?  @db.UnsignedInt
+  UserHaveRole Role? @relation("userHaveRole", fields: [roleId], references: [id])
+
+  userId       Int?  @db.UnsignedInt
+  RoleHaveUser User? @relation("roleHaveUser", fields: [userId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  updatedByUser User? @relation("updatedByRelationInUserHasRole", fields: [updatedBy], references: [id])
+  createdByUser User? @relation("createdByRelationInUserHasRole", fields: [createdBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInUserHasRole", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@map("user_has_roles")
+}
+
+model Organization {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique @db.VarChar(255)
+  description String? @db.LongText
+  ownerId     Int?    @db.UnsignedInt
+  Owner       User?   @relation("organizationOwnership", fields: [ownerId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  updatedByUser User? @relation("updatedByRelationInUserHasRole", fields: [updatedBy], references: [id])
+  createdByUser User? @relation("createdByRelationInUserHasRole", fields: [createdBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInUserHasRole", fields: [deletedBy], references: [id])
+
+  // Role Role[] @relation("roleInOrganization")
+
+  @@index([id])
+  @@map("organizations")
+}
+
+model OrganizationRole {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @unique @db.VarChar(255)
+  displayName String? @db.VarChar(255)
+  description String? @db.VarChar(255)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser                  User?                            @relation("createdByRelationInOrganizationRole", fields: [createdBy], references: [id])
+  updatedByUser                  User?                            @relation("updatedByRelationInOrganizationRole", fields: [updatedBy], references: [id])
+  deletedByUser                  User?                            @relation("deletedByRelationInOrganizationRole", fields: [deletedBy], references: [id])
+  UserHaveRoleOnOrganization     UserHaveRoleOnOrganization[]     @relation("userHaveOrganizationRole")
+  OrganizationRoleHavePermission OrganizationRoleHavePermission[] @relation("organizationRoleRelation")
+
+  @@index([id])
+  @@map("organization_roles")
+}
+
+model UserHaveRoleOnOrganization {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  organizationRoleId       Int?  @db.UnsignedInt
+  OrganizationRoleHaveUser User? @relation("organizationRoleHaveUser", fields: [userId], references: [id])
+
+  userId                   Int?              @db.UnsignedInt
+  UserHaveOrganizationRole OrganizationRole? @relation("userHaveOrganizationRole", fields: [organizationRoleId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  updatedByUser User? @relation("updatedByRelationInOrganizationUserHasRole", fields: [updatedBy], references: [id])
+  createdByUser User? @relation("createdByRelationInOrganizationUserHasRole", fields: [createdBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInOrganizationUserHasRole", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@map("organization_user_has_roles")
+}
+
+model OrganizationRoleHavePermission {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  permissionId Int?        @db.UnsignedInt
+  Permission   Permission? @relation("organizationPermissionRelation", fields: [permissionId], references: [id])
+
+  organizationRoleId Int?              @db.UnsignedInt
+  OrganizationRole   OrganizationRole? @relation("organizationRoleRelation", fields: [organizationRoleId], references: [id])
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInOrganizationRoleHavePermission", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInOrganizationRoleHavePermission", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInOrganizationRoleHavePermission", fields: [deletedBy], references: [id])
+
+  @@index([id])
+  @@map("organization_role_has_permissions")
+}
+

@@ -17,7 +17,7 @@ class AuthRepository {
       }
       const newUser = prisma.user.create({
         data: {
-          ...record, referalCode : (await randomString(5)).toUpperCase()
+          ...record, ...additional
         },
       });
       const [createdUser] = await prisma.$transaction([newUser]);
