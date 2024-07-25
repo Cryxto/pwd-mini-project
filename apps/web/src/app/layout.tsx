@@ -8,7 +8,6 @@ import 'react-toastify/ReactToastify.css';
 import { UserProvider } from '@/stores/user/userProvider';
 import { CheckAuth } from '@/components/CheckAuth';
 
-// const inter = Inter({ subsets: ['latin'] });
 const poppins = Poppins({ subsets: ['latin'], weight: '400' });
 
 export const metadata: Metadata = {
@@ -30,10 +29,10 @@ export default function RootLayout({
     >
       <body className={poppins.className}>
         <UserProvider>
-          <CheckAuth/>
-          <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100">
+          <CheckAuth />
+          <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100 overflow-x-clip">
             <Header />
-            <main className="flex flex-1 flex-col w-full min-h-screen py-20 ">
+            <main className="flex flex-1 flex-col w-full min-h-screen py-20">
               {children}
             </main>
             <Footer />

@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useContext, useState } from 'react';
-import { signInProceed } from '@/server.actions';
+import {  signInProcess } from '@/server.actions';
 import { Bounce, toast } from 'react-toastify';
 import { useSafeBack } from '@/hooks';
 import { UserContext } from '@/stores/user/userContext';
@@ -16,7 +16,7 @@ export function SignIn() {
   let err :  string | (()=> JSX.Element)
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await signInProceed({ identifier, password });
+    const res = await signInProcess({ identifier, password });
     setStatus('pending');
     if (res.ok === true) {
       toast.success('Login success!', {

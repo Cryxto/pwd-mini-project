@@ -20,7 +20,7 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-export async function signInProceed({
+export async function signInProcess({
   identifier,
   password,
 }: {
@@ -79,7 +79,7 @@ export async function signInProceed({
   return result;
 }
 
-export const verifyToken = async () : Promise<{
+export const verifyToken = async (): Promise<{
   ok: boolean;
   user: unknown | User | null;
   error?: string | Array<any>;
@@ -95,68 +95,66 @@ export const verifyToken = async () : Promise<{
   try {
     const token = cookies().get('auth_token');
     if (token) {
-      const token  = cookies().get('auth_token')?.value as unknown as string
-      
+      const token = cookies().get('auth_token')?.value as unknown as string;
+
       const jwtRes = await jwtVerify(token, jwtSecret);
       result.user = jwtRes.payload as unknown as User;
-      result.ok = true
+      result.ok = true;
     }
   } catch (error) {
     console.error('Token verification failed', error);
-    result.error = 'Token verification failed'
+    result.error = 'Token verification failed';
   }
-  return result
+  return result;
 };
 
-
 export async function signUpProceed({
-  identifier,
+  email,
+  username,
   password,
+  firstName,
+  lastName,
+  referal,
+  middleName,
 }: {
-  identifier: string;
+  email: string;
+  username: string;
   password: string;
+  firstName: string;
+  lastName: string;
+  referal?: string;
+  middleName?: string;
 }): Promise<{
   ok: boolean;
-  user: unknown | User | null;
+
   error?: string | Array<any>;
 }> {
   let result: {
     ok: boolean;
-    user: unknown | User | null;
+
     error?: string | Array<any>;
   } = {
     ok: false,
-    user: null,
   };
   try {
-    const res = await axiosInstance.post(
-      '/auth/sign-in',
-      { identifier, password },
+    await axiosInstance.post(
+      '/auth/sign-up',
+      {
+        email,
+        username,
+        password,
+        firstName,
+        lastName,
+        referal,
+        middleName,
+      },
       {
         withCredentials: true,
         signal: AbortSignal.timeout(8000),
         baseURL: backEndUrl,
       },
     );
-    cookies().set('auth_token', res.data.auth_token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 5 * 1000,
-    });
-    cookies().set('verification', res.data.verification, {
-      httpOnly: true,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 5 * 1000,
-    });
-    console.log(res.data.auth_token);
-    console.log(jwtSecret);
-
-    const jwtRes = await jwtVerify(res.data.auth_token, jwtSecret);
-    delete jwtRes.payload.iat;
-    delete jwtRes.payload.exp;
-
     result.ok = true;
-    result.user = jwtRes.payload as unknown as User;
   } catch (error: any) {
     if (error.response) {
       result.error = error.response.data.error.errors as Array<any>;
@@ -167,3 +165,4 @@ export async function signUpProceed({
 
   return result;
 }
+
