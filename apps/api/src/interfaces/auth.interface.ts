@@ -22,7 +22,8 @@ export interface AuthResultInterface {
   email: string;
   createdAt: Date;
   updatedAt: Date | null;
-  referalCode: string | null
+  referalCode: string | null;
+  referedBy? : number | string | null
 }
 
 export interface AuthJWTInterface {

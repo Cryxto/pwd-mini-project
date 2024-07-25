@@ -7,7 +7,7 @@ import { useSafeBack } from '@/hooks';
 import { UserContext } from '@/stores/user/userContext';
 import { User } from '@/stores/user/userAnnotation';
 
-export function SignIn() {
+export function SignUp() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState('');

@@ -19,7 +19,7 @@ model Sample {
 
 model User {
   id          Int       @id @default(autoincrement()) @db.UnsignedInt
-  username    String    @db.VarChar(255)
+  username    String    @unique @db.VarChar(255)
   firstName   String    @db.VarChar(255)
   lastName    String    @db.VarChar(255)
   password    String    @db.VarChar(255)
@@ -92,6 +92,7 @@ model User {
   createdFromUsersCoupon UsersCoupon[] @relation("createdByRelationInUsersCoupon")
   updatedFromUsersCoupon UsersCoupon[] @relation("updatedByRelationInUsersCoupon")
   deletedFromUsersCoupon UsersCoupon[] @relation("deletedByRelationInUsersCoupon")
+  UsersCoupon            UsersCoupon[] @relation("usersCoupon")
 
   @@index([username])
   @@index([email])
@@ -257,10 +258,10 @@ model OrganizationRole {
 model UserHaveRoleOnOrganization {
   id Int @id @default(autoincrement()) @db.UnsignedInt
 
-  organizationRoleId       Int?  @db.UnsignedInt
+  userId                   Int?  @db.UnsignedInt
   OrganizationRoleHaveUser User? @relation("organizationRoleHaveUser", fields: [userId], references: [id])
 
-  userId                   Int?              @db.UnsignedInt
+  organizationRoleId       Int?              @db.UnsignedInt
   UserHaveOrganizationRole OrganizationRole? @relation("userHaveOrganizationRole", fields: [organizationRoleId], references: [id])
 
   createdAt DateTime? @default(now())
@@ -305,6 +306,9 @@ model OrganizationRoleHavePermission {
 model UserPointHistory {
   id Int @id @default(autoincrement()) @db.UnsignedInt
 
+  points    Float?
+  expiredAt DateTime?
+
   userId Int?  @db.UnsignedInt
   User   User? @relation("userPointHistory", fields: [userId], references: [id])
 
@@ -330,18 +334,21 @@ model UserPointHistory {
 model Coupon {
   id Int @id @default(autoincrement()) @db.UnsignedInt
 
-  code String? @unique @db.VarChar(255)
-  unit String? @db.VarChar(255)
+  code     String? @unique @db.VarChar(255)
+  discount Float?
+  unit     String? @db.VarChar(255)
 
-  daysCouponAlive Int?
+  daysCouponAlive  Int?
+  monthCouponAlive Int?
   // expiredAt   DateTime?
-  title           String? @db.VarChar(255)
-  description     String? @db.LongText
-  quota           Int?
+  title            String? @db.VarChar(255)
+  description      String? @db.LongText
+  quota            Int?
 
   issuedBy     Int?          @db.UnsignedInt
   Organization Organization? @relation("coupunIssuedBy", fields: [issuedBy], references: [id])
-  UsersCoupon  UsersCoupon[] @relation("usersCoupon")
+
+  UsersCoupon UsersCoupon[] @relation("usersCoupon")
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -366,6 +373,9 @@ model UsersCoupon {
   Coupon   Coupon? @relation("usersCoupon", fields: [couponId], references: [id])
 
   expiredAt DateTime?
+
+  userId Int?  @db.UnsignedInt
+  User   User? @relation("usersCoupon", fields: [userId], references: [id])
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt

@@ -31,6 +31,18 @@ export class AuthRouter {
       '/test',
       this.authMiddleware.shouldSignIn,
     );
+    this.router.get(
+      '/check-email/:email',
+      this.authController.checkEmail
+    )
+    this.router.get(
+      '/check-username/:username',
+      this.authController.checkUsername
+    )
+    this.router.get(
+      '/check-referal/:referal',
+      this.authController.checkReferal
+    )
   }
 
   getRouter(): Router {

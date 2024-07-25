@@ -164,6 +164,20 @@ async function main() {
       },
     });
 
+    const coupon = prisma.coupon.create({
+      data:{
+        id: 1,
+        code : crypto.randomBytes(7).toString('hex').toUpperCase(),
+        createdBy: 1,
+        issuedBy: 1,
+        monthCouponAlive: 3,
+        title: "New Comer Welcome",
+        description: "Get 10% discount to desired event",
+        discount: 10,
+        unit: "percent",
+      }
+    })
+
     // Wait for all promises to complete before committing the transaction
     const [
       user,
@@ -174,6 +188,7 @@ async function main() {
       visitorRoleResult,
       organizationResult,
       roleAssignment,
+      couponCreated,
     ] = await prisma.$transaction([
       superuser,
       superUserUpdate,
@@ -183,6 +198,7 @@ async function main() {
       visitorRole,
       organization,
       assignSuperuserRole,
+      coupon,
     ]);
 
     console.log({
@@ -194,6 +210,7 @@ async function main() {
       organizationResult,
       roleAssignment,
       updateSuperUser,
+      couponCreated
     });
   } catch (e) {
     console.error(e);

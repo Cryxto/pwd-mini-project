@@ -21,7 +21,7 @@ export const Header = () => {
     };
   },[scrollState])
   return (
-    <header className={`bg-base-100 text-base-content sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-80 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] ${scrollState? 'shadow-sm':''}`}>
+    <header className={`bg-base-100 text-base-content sticky top-0 z-30 flex h-16 max-w-full w-full justify-center bg-opacity-80 backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] ${scrollState? 'shadow-sm':''}`}>
       <Navbar />
     </header>
   );

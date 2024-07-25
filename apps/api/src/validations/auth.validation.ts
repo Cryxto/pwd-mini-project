@@ -41,7 +41,7 @@ export let SignUpSchema = object({
       }
       return false;
     }),
-  password: string().required(),
+  password: string().required().min(5),
   middleName: string().optional(),
   referal: string().optional()
 });
@@ -69,3 +69,7 @@ export let SignInSchema = object({
       return false;
     }),
 });
+
+export let CheckEmailSchema = object({
+  email: string().email().required()
+})

@@ -10,7 +10,7 @@ export default class ServerMiddleware {
     const {API_KEY} = ENV
     const apiKey = req.headers['x-api-key'];
     if (apiKey !== API_KEY) {
-      return res.status(403).json({ message: 'Forbidden', headers : req.headers});
+      return res.status(403).json({ message: 'Forbidden'});
     }
     next();
   }

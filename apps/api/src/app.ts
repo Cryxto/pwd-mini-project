@@ -60,7 +60,7 @@ export default class App {
     // const sampleRouter = new SampleRouter();
     const authRouter = new AuthRouter()
 
-    // this.app.use(this.serverMiddleware.verifyApiKey)
+    this.app.use(this.serverMiddleware.verifyApiKey)
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);

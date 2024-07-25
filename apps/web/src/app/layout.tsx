@@ -5,6 +5,8 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
+import { UserProvider } from '@/stores/user/userProvider';
+import { CheckAuth } from '@/components/CheckAuth';
 
 // const inter = Inter({ subsets: ['latin'] });
 const poppins = Poppins({ subsets: ['latin'], weight: '400' });
@@ -23,18 +25,21 @@ export default function RootLayout({
     <html
       lang="en"
       className="scroll-smooth"
-      data-theme="pastel"
+      data-theme="fantasy"
       suppressHydrationWarning
     >
       <body className={poppins.className}>
-        <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100">
-          <Header />
-          <main className="flex flex-1 flex-col w-full min-h-screen py-20 ">
-            {children}
-          </main>
-          <Footer />
-        </div>
-        <ToastContainer pauseOnFocusLoss={false} />
+        <UserProvider>
+          <CheckAuth/>
+          <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100">
+            <Header />
+            <main className="flex flex-1 flex-col w-full min-h-screen py-20 ">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <ToastContainer pauseOnFocusLoss={false} />
+        </UserProvider>
       </body>
     </html>
   );
