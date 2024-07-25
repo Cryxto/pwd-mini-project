@@ -36,6 +36,10 @@ export function Navbar() {
     setMobileDropdownOpen(false);
   };
 
+  const handleProfileLinkClick = () => {
+    setProfileDropdownOpen(false);
+  };
+
   return (
     <nav className="navbar bg-base-100 flex justify-between items-center w-full">
       <div className="navbar-start">
@@ -73,14 +77,9 @@ export function Navbar() {
           </li>
         </ul>
       </div>
-      <div className="navbar-end hidden lg:flex">
+      <div className="navbar-end">
         {loading ? (
           <span className="loading loading-dots loading-md"></span>
-        ) : !state.isSignIn ? (
-          <>
-            <Link href="/sign-in" className={`btn btn-ghost ${pathname === '/sign-in' ? 'btn-active' : ''}`}>Sign In</Link>
-            <Link href="/sign-up" className="btn btn-neutral mx-1">Sign Up</Link>
-          </>
         ) : (
           <div ref={profileDropdownRef} className="dropdown dropdown-end">
             <div
@@ -97,41 +96,25 @@ export function Navbar() {
               tabIndex={0}
               className={`menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
             >
-              <li>
-                <a className="justify-between">Profile</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
-        )}
-      </div>
-      <div className="navbar-end lg:hidden">
-        {loading ? (
-          <span className="loading loading-dots loading-md"></span>
-        ) : !state.isSignIn && (
-          <div ref={profileDropdownRef} className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-              onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
-            >
-              <div className="flex flex-col justify-center items-center rounded-full">
-                <GoPerson size={30} />
-              </div>
-            </div>
-            <ul
-              tabIndex={0}
-              className={`menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
-            >
-              <li>
-                <Link href="/sign-up" className="justify-between" onClick={() => setProfileDropdownOpen(false)}>Sign Up</Link>
-              </li>
-              <li>
-                <Link href="/sign-in" className="justify-between" onClick={() => setProfileDropdownOpen(false)}>Sign In</Link>
-              </li>
+              {!state.isSignIn ? (
+                <>
+                  <li>
+                    <Link href="/sign-in" className="justify-between" onClick={handleProfileLinkClick}>Sign In</Link>
+                  </li>
+                  <li>
+                    <Link href="/sign-up" className="justify-between" onClick={handleProfileLinkClick}>Sign Up</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <a className="justify-between" onClick={handleProfileLinkClick}>Profile</a>
+                  </li>
+                  <li>
+                    <a onClick={handleProfileLinkClick}>Logout</a>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         )}
