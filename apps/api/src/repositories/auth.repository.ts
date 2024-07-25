@@ -20,7 +20,7 @@ class AuthRepository {
         referalCode: (await randomString(5)).toUpperCase(),
       };
       let getBonus = false;
-      const referalBelongsTo = await prisma.user.findFirst({
+      const referalBelongsTo = await prisma.user.findUnique({
         where: { referalCode: record.referal, deletedAt: null },
       });
 
@@ -102,6 +102,18 @@ class AuthRepository {
             createdBy: 1,
           },
         });
+        if (getBonus && referalBelongsTo?.username!=='system') {
+
+          await pr.userPointHistory.create({
+            data: {
+              createdBy: 1,
+              points: 10000,
+              expiredAt: await setDateNowAndAddMonth(3),
+              userInvitedId: newUser.id,
+              userId: referalBelongsTo?.id
+            },
+          });
+        }
         return newUser;
       });
 
@@ -125,74 +137,79 @@ class AuthRepository {
       };
     }
   }
-  
-  async checkReferal (referalInput: string) : Promise<{ok: boolean, data?: string|null|undefined}>{
-    let result : {ok: boolean, data?: string|null} = {
-      ok: false,
-    }
-    try {
-      const referer = await prisma.user.findUnique({
-        where: {
-          referalCode: referalInput
-        },
-        select: {
-          username: true
-        }
-      })
-      if (referer) {
-        result.data = referer.username
-        result.ok = true
-      }
-    } catch (error) {
-      result.ok = false
-    }
-    return result
-  }
-  async checkEmail (emailInput: string) : Promise<{ok: boolean, data?: string|null|undefined}>{
-    let result : {ok: boolean, data?: string|null} = {
-      ok: false,
-    }
-    try {
-      const referer = await prisma.user.findUnique({
-        where: {
-          email: emailInput
-        },
-        select: {
-          email: true
-        }
-      })
-      if (referer) {
-        result.data = referer.email
-        result.ok = true
-      }
-    } catch (error) {
-      result.ok = false
-    }
-    return result
-  }
-  async checkUsername (usernameInput: string) : Promise<{ok: boolean, data?: string|null|undefined}>{
-    let result : {ok: boolean, data?: string|null} = {
-      ok: false,
-    }
-    try {
-      const referer = await prisma.user.findUnique({
-        where: {
-          username: usernameInput
-        },
-        select: {
-          username: true
-        }
-      })
-      if (referer) {
-        result.data = referer.username
-        result.ok = true
-      }
-    } catch (error) {
-      result.ok = false
-    }
-    return result
-  }
 
+  async checkReferal(
+    referalInput: string,
+  ): Promise<{ ok: boolean; data?: string | null | undefined }> {
+    let result: { ok: boolean; data?: string | null } = {
+      ok: false,
+    };
+    try {
+      const referer = await prisma.user.findUnique({
+        where: {
+          referalCode: referalInput,
+        },
+        select: {
+          username: true,
+        },
+      });
+      if (referer) {
+        result.data = referer.username;
+        result.ok = true;
+      }
+    } catch (error) {
+      result.ok = false;
+    }
+    return result;
+  }
+  async checkEmail(
+    emailInput: string,
+  ): Promise<{ ok: boolean; data?: string | null | undefined }> {
+    let result: { ok: boolean; data?: string | null } = {
+      ok: false,
+    };
+    try {
+      const referer = await prisma.user.findUnique({
+        where: {
+          email: emailInput,
+        },
+        select: {
+          email: true,
+        },
+      });
+      if (referer) {
+        result.data = referer.email;
+        result.ok = true;
+      }
+    } catch (error) {
+      result.ok = false;
+    }
+    return result;
+  }
+  async checkUsername(
+    usernameInput: string,
+  ): Promise<{ ok: boolean; data?: string | null | undefined }> {
+    let result: { ok: boolean; data?: string | null } = {
+      ok: false,
+    };
+    try {
+      const referer = await prisma.user.findUnique({
+        where: {
+          username: usernameInput,
+        },
+        select: {
+          username: true,
+        },
+      });
+      if (referer) {
+        result.data = referer.username;
+        result.ok = true;
+      }
+    } catch (error) {
+      result.ok = false;
+    }
+    return result;
+  }
 }
 
 export const authRepository = new AuthRepository();

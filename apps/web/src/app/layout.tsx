@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
 import { UserProvider } from '@/stores/user/userProvider';
 import { CheckAuth } from '@/components/CheckAuth';
+import { ThemeProvider } from '@/stores/theme/themeProvider';
 
 const poppins = Poppins({ subsets: ['latin'], weight: '400' });
 
@@ -28,17 +29,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={poppins.className}>
-        <UserProvider>
-          <CheckAuth />
-          <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100 overflow-x-clip">
-            <Header />
-            <main className="flex flex-1 flex-col w-full min-h-screen py-20">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <ToastContainer pauseOnFocusLoss={false} />
-        </UserProvider>
+        <ThemeProvider>
+          <UserProvider>
+            <CheckAuth />
+            <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100 overflow-x-clip">
+              <Header />
+              <main className="flex flex-1 flex-col w-full min-h-screen py-2">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <ToastContainer pauseOnFocusLoss={false} />
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

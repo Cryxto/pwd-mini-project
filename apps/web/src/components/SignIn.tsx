@@ -83,6 +83,8 @@ export function SignIn() {
         onSubmit={handleSubmit}
         className="gap-4 flex flex-col max-w-full items-center"
       >
+            <h1 className="text-xl font-bold my-2">Sign in</h1>
+
         <div id="input" className="w-80">
           <label className="input input-bordered flex items-center gap-2 my-2">
             <svg

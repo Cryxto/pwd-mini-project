@@ -165,4 +165,13 @@ export async function signUpProceed({
 
   return result;
 }
-
+export async function signOut() : Promise<boolean> {
+  const verify = await verifyToken()
+  let status =false
+  if (verify.ok) {
+    cookies().delete('auth_token')
+    cookies().delete('verification')
+    status = true
+  }
+  return status
+}

@@ -89,10 +89,11 @@ model User {
   updatedFromCoupon Coupon[] @relation("updatedByRelationInCoupon")
   deletedFromCoupon Coupon[] @relation("deletedByRelationInCoupon")
 
-  createdFromUsersCoupon UsersCoupon[] @relation("createdByRelationInUsersCoupon")
-  updatedFromUsersCoupon UsersCoupon[] @relation("updatedByRelationInUsersCoupon")
-  deletedFromUsersCoupon UsersCoupon[] @relation("deletedByRelationInUsersCoupon")
-  UsersCoupon            UsersCoupon[] @relation("usersCoupon")
+  createdFromUsersCoupon  UsersCoupon[]      @relation("createdByRelationInUsersCoupon")
+  updatedFromUsersCoupon  UsersCoupon[]      @relation("updatedByRelationInUsersCoupon")
+  deletedFromUsersCoupon  UsersCoupon[]      @relation("deletedByRelationInUsersCoupon")
+  UsersCoupon             UsersCoupon[]      @relation("usersCoupon")
+  UserInvitedPointHistory UserPointHistory[] @relation("userInvitedPointHistory")
 
   @@index([username])
   @@index([email])
@@ -314,6 +315,9 @@ model UserPointHistory {
 
   refererId Int?  @db.UnsignedInt
   Referer   User? @relation("refererPointHistory", fields: [refererId], references: [id])
+
+  userInvitedId Int?  @db.UnsignedInt
+  UserInvited   User? @relation("userInvitedPointHistory", fields: [userInvitedId], references: [id])
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt

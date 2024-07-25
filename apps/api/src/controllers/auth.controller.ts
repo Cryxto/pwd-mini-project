@@ -101,4 +101,5 @@ export class AuthController {
     }
     return res.status(200).send({message: 'not found, use another one', exist: false})
   }
+
 }

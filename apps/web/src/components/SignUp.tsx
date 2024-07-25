@@ -123,7 +123,7 @@ export function SignUp() {
   };
 
   return (
-    <div>
+    <div className="p-4 max-w-xl w-full mx-auto mb-20">
       <Formik
         initialValues={{
           email: '',
@@ -139,151 +139,135 @@ export function SignUp() {
         onSubmit={handleSubmit}
       >
         {({ errors, touched, isSubmitting }) => (
-          <Form className="gap-4 flex flex-col max-w-full items-center">
-            <h1 className='text-xl font-bold'>Sign Up</h1>
+          <Form className="gap-4 flex flex-col items-center">
+            <h1 className="text-xl font-bold mb-4">Sign Up</h1>
 
-            <div id="input" className="w-80">
-              <label className="input input-bordered flex items-center gap-2 my-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
+            <div className="w-full max-w-md">
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Email</span>
+                </div>
                 <Field
                   type="email"
                   name="email"
                   placeholder="Email"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.email && errors.email ? 'input-error' : ''}`}
                 />
+                {touched.email && errors.email && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.email}</div>
+                )}
               </label>
-              {touched.email && errors.email && (
-                <div className="text-red-600">{errors.email}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                </svg>
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Username</span>
+                </div>
                 <Field
                   type="text"
                   name="username"
                   placeholder="Username"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.username && errors.username ? 'input-error' : ''}`}
                 />
+                {touched.username && errors.username && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.username}</div>
+                )}
               </label>
-              {touched.username && errors.username && (
-                <div className="text-red-600">{errors.username}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Password</span>
+                </div>
                 <Field
                   type="password"
                   name="password"
                   placeholder="Password"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.password && errors.password ? 'input-error' : ''}`}
                 />
+                {touched.password && errors.password && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.password}</div>
+                )}
               </label>
-              {touched.password && errors.password && (
-                <div className="text-red-600">{errors.password}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-70"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Confirm Password</span>
+                </div>
                 <Field
                   type="password"
                   name="confirmPassword"
                   placeholder="Confirm Password"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.confirmPassword && errors.confirmPassword ? 'input-error' : ''}`}
                 />
+                {touched.confirmPassword && errors.confirmPassword && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.confirmPassword}</div>
+                )}
               </label>
-              {touched.confirmPassword && errors.confirmPassword && (
-                <div className="text-red-600">{errors.confirmPassword}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">First Name</span>
+                </div>
                 <Field
                   type="text"
                   name="firstName"
                   placeholder="First Name"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.firstName && errors.firstName ? 'input-error' : ''}`}
                 />
+                {touched.firstName && errors.firstName && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.firstName}</div>
+                )}
               </label>
-              {touched.firstName && errors.firstName && (
-                <div className="text-red-600">{errors.firstName}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Last Name</span>
+                </div>
                 <Field
                   type="text"
                   name="lastName"
                   placeholder="Last Name"
-                  className="grow"
+                  className={`input input-bordered w-full ${touched.lastName && errors.lastName ? 'input-error' : ''}`}
                 />
+                {touched.lastName && errors.lastName && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.lastName}</div>
+                )}
               </label>
-              {touched.lastName && errors.lastName && (
-                <div className="text-red-600">{errors.lastName}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Referral Code (optional)</span>
+                </div>
                 <Field
                   type="text"
                   name="referal"
-                  placeholder="Referral Code (optional)"
-                  className="grow"
+                  placeholder="Referral Code"
+                  className={`input input-bordered w-full ${touched.referal && errors.referal ? 'input-error' : ''}`}
                 />
+                {touched.referal && errors.referal && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.referal}</div>
+                )}
               </label>
-              {touched.referal && errors.referal && (
-                <div className="text-red-600">{errors.referal}</div>
-              )}
 
-              <label className="input input-bordered flex items-center gap-2 my-2">
+              <label className="form-control w-full mb-4">
+                <div className="label">
+                  <span className="label-text">Middle Name (optional)</span>
+                </div>
                 <Field
                   type="text"
                   name="middleName"
-                  placeholder="Middle Name (optional)"
-                  className="grow"
+                  placeholder="Middle Name"
+                  className={`input input-bordered w-full ${touched.middleName && errors.middleName ? 'input-error' : ''}`}
                 />
+                {touched.middleName && errors.middleName && (
+                  <div className="text-red-600 mt-1 text-sm">{errors.middleName}</div>
+                )}
               </label>
-              {touched.middleName && errors.middleName && (
-                <div className="text-red-600">{errors.middleName}</div>
-              )}
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`btn ${isSubmitting ? 'btn-disabled' : ''}`}
+              className={`btn btn-neutral ${isSubmitting ? 'btn-disabled' : ''}`}
             >
               {isSubmitting ? 'Signing Up...' : 'Sign Up'}
             </button>
