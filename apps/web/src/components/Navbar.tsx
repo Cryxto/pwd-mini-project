@@ -5,20 +5,46 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { GoPerson } from 'react-icons/go';
 import { useTheme } from '@/stores/theme/themeProvider';
-import { signOut } from '@/server.actions';  // Import the signOut function
+import { signOut } from '@/server.actions'; // Import the signOut function
 
 const themes = [
-  "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", 
-  "synthwave", "retro", "cyberpunk", "valentine", "halloween", 
-  "garden", "forest", "aqua", "lofi", "pastel", "fantasy", 
-  "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", 
-  "business", "acid", "lemonade", "night", "coffee", "winter", 
-  "dim", "nord", "sunset"
+  'light',
+  'dark',
+  'cupcake',
+  'bumblebee',
+  'emerald',
+  'corporate',
+  'synthwave',
+  'retro',
+  'cyberpunk',
+  'valentine',
+  'halloween',
+  'garden',
+  'forest',
+  'aqua',
+  'lofi',
+  'pastel',
+  'fantasy',
+  'wireframe',
+  'black',
+  'luxury',
+  'dracula',
+  'cmyk',
+  'autumn',
+  'business',
+  'acid',
+  'lemonade',
+  'night',
+  'coffee',
+  'winter',
+  'dim',
+  'nord',
+  'sunset',
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter()
+  const router = useRouter();
   const { state, dispatch, loading } = useContext(UserContext);
   const { setTheme } = useTheme();
 
@@ -32,9 +58,12 @@ export function Navbar() {
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
-      mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target as Node) &&
-      profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node) &&
-      themeDropdownRef.current && !themeDropdownRef.current.contains(event.target as Node)
+      mobileDropdownRef.current &&
+      !mobileDropdownRef.current.contains(event.target as Node) &&
+      profileDropdownRef.current &&
+      !profileDropdownRef.current.contains(event.target as Node) &&
+      themeDropdownRef.current &&
+      !themeDropdownRef.current.contains(event.target as Node)
     ) {
       setMobileDropdownOpen(false);
       setProfileDropdownOpen(false);
@@ -67,10 +96,15 @@ export function Navbar() {
     const result = await signOut();
     if (result) {
       dispatch({ type: 'SIGN_OUT' });
-      router.refresh()
+      router.refresh();
       // Optionally redirect to sign-in page or refresh
     }
   };
+
+  useEffect(() => {
+    // console.log('User state:', state);
+    // console.log('Loading:', loading);
+  }, [state, loading]);
 
   return (
     <nav className="navbar bg-base-100 flex justify-between items-center w-full">
@@ -81,8 +115,19 @@ export function Navbar() {
             className="btn btn-ghost lg:hidden"
             onClick={() => setMobileDropdownOpen(!isMobileDropdownOpen)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
             </svg>
           </button>
           <ul
@@ -90,10 +135,14 @@ export function Navbar() {
             className={`menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}
           >
             <li>
-              <Link href="/search-event" onClick={handleMobileLinkClick}>Search Event</Link>
+              <Link href="/search-event" onClick={handleMobileLinkClick}>
+                Search Event
+              </Link>
             </li>
             <li>
-              <Link href="/category" onClick={handleMobileLinkClick}>Category</Link>
+              <Link href="/category" onClick={handleMobileLinkClick}>
+                Category
+              </Link>
             </li>
             <li ref={themeDropdownRef}>
               <button
@@ -123,7 +172,8 @@ export function Navbar() {
                       onClick={() => handleThemeChange(themeOption)}
                       className="btn btn-sm btn-ghost w-full text-left"
                     >
-                      {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
+                      {themeOption.charAt(0).toUpperCase() +
+                        themeOption.slice(1)}
                     </button>
                   </li>
                 ))}
@@ -131,15 +181,27 @@ export function Navbar() {
             </li>
           </ul>
         </div>
-        <Link href="/" className="btn btn-ghost normal-case text-xl">myEvent</Link>
+        <Link href="/" className="btn btn-ghost normal-case text-xl">
+          myEvent
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link href="/search-event" className={`btn btn-ghost w-full text-left ${pathname === '/search-event' ? 'underline' : ''}`}>Search Event</Link>
+            <Link
+              href="/search-event"
+              className={`btn btn-ghost w-full text-left ${pathname === '/search-event' ? 'underline' : ''}`}
+            >
+              Search Event
+            </Link>
           </li>
           <li>
-            <Link href="/category" className={`btn btn-ghost w-full text-left ${pathname === '/category' ? 'underline' : ''}`}>Category</Link>
+            <Link
+              href="/category"
+              className={`btn btn-ghost w-full text-left ${pathname === '/category' ? 'underline' : ''}`}
+            >
+              Category
+            </Link>
           </li>
           <li ref={themeDropdownRef} className="relative">
             <button
@@ -181,45 +243,95 @@ export function Navbar() {
         {loading ? (
           <span className="loading loading-dots loading-md"></span>
         ) : (
-          <div ref={profileDropdownRef} className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-              onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
-            >
-              <div className="flex flex-col justify-center items-center rounded-full">
-                <GoPerson size={30} />
+          <>
+            {!isMobileDropdownOpen && state.isSignIn ? (
+              <span className="mr-2 hidden lg:block">
+                {state.user?.username}
+              </span>
+            ) : (
+              ''
+            )}
+
+            <div ref={profileDropdownRef} className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar flex items-center"
+                onClick={() => setProfileDropdownOpen(!isProfileDropdownOpen)}
+              >
+                {state.isSignIn ? (
+                  <div className="flex items-center">
+                    <GoPerson size={30} />
+                  </div>
+                ) : (
+                  <GoPerson size={30} />
+                )}
               </div>
+              <ul
+                tabIndex={0}
+                className={`menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
+              >
+                {!state.isSignIn ? (
+                  <>
+                    <li>
+                      <Link
+                        href="/sign-in"
+                        className="justify-between"
+                        onClick={handleProfileLinkClick}
+                      >
+                        Sign In
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/sign-up"
+                        className="justify-between"
+                        onClick={handleProfileLinkClick}
+                      >
+                        Sign Up
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    {isMobileDropdownOpen && state.isSignIn ? (
+                      <li>
+                        <span className="mr-2 lg:block">
+                          {state.user?.username}
+                        </span>
+                      </li>
+                    ) : (
+                      ''
+                    )}
+                    {/* <li>
+                      <span className="mr-2 lg:block">
+                        {state.user?.username}
+                      </span>
+                    </li> */}
+                    <li>
+                      <Link
+                        href="/profile"
+                        className="justify-between"
+                        onClick={handleProfileLinkClick}
+                      >
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {
+                          handleSignOut();
+                          handleProfileLinkClick();
+                        }}
+                      >
+                        Sign out
+                      </button>
+                    </li>
+                  </>
+                )}
+              </ul>
             </div>
-            <ul
-              tabIndex={0}
-              className={`menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow ${isProfileDropdownOpen ? 'block' : 'hidden'}`}
-            >
-              {!state.isSignIn ? (
-                <>
-                  <li>
-                    <Link href="/sign-in" className="justify-between" onClick={handleProfileLinkClick}>Sign In</Link>
-                  </li>
-                  <li>
-                    <Link href="/sign-up" className="justify-between" onClick={handleProfileLinkClick}>Sign Up</Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <a className="justify-between" onClick={handleProfileLinkClick}>Profile</a>
-                  </li>
-                  <li>
-                    <a onClick={() => {
-                      handleSignOut();
-                      handleProfileLinkClick();
-                    }}>Sign out</a>
-                  </li>
-                </>
-              )}
-            </ul>
-          </div>
+          </>
         )}
       </div>
     </nav>

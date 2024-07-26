@@ -95,6 +95,18 @@ model User {
   UsersCoupon             UsersCoupon[]      @relation("usersCoupon")
   UserInvitedPointHistory UserPointHistory[] @relation("userInvitedPointHistory")
 
+  createdFromEvent Event[]            @relation("createdByRelationInEvent")
+  updatedFromEvent Event[]            @relation("updatedByRelationInEvent")
+  deletedFromEvent Event[]            @relation("deletedByRelationInEvent")
+  EventTransaction EventTransaction[] @relation("attendee")
+
+  createdFromEventTransaction EventTransaction[] @relation("createdByRelationInEventTransaction")
+  updatedFromEventTransaction EventTransaction[] @relation("updatedByRelationInEventTransaction")
+  deletedFromEventTransaction EventTransaction[] @relation("deletedByRelationInEventTransaction")
+  createdFromCategory         Category[]         @relation("createdByRelationInCategory")
+  updatedFromCategory         Category[]         @relation("updatedByRelationInCategory")
+  deletedFromCategory         Category[]         @relation("deletedByRelationInCategory")
+
   @@index([username])
   @@index([email])
   @@index([referalCode])
@@ -223,6 +235,7 @@ model Organization {
 
   OrganizationRole OrganizationRole[] @relation("organizationRole")
   Coupon           Coupon[]           @relation("coupunIssuedBy")
+  Event            Event[]            @relation("eventOrganizer")
 
   @@index([name])
   @@index([id])
@@ -319,6 +332,9 @@ model UserPointHistory {
   userInvitedId Int?  @db.UnsignedInt
   UserInvited   User? @relation("userInvitedPointHistory", fields: [userInvitedId], references: [id])
 
+  relatedTransactionId Int?              @db.UnsignedInt
+  RelatedTransaction   EventTransaction? @relation("relatedEventTransaction", fields: [relatedTransactionId], references: [id])
+
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
@@ -381,6 +397,9 @@ model UsersCoupon {
   userId Int?  @db.UnsignedInt
   User   User? @relation("usersCoupon", fields: [userId], references: [id])
 
+  relatedTransactionId Int?              @db.UnsignedInt
+  RelatedTransaction   EventTransaction? @relation("relatedTransactonFromCoupon", fields: [relatedTransactionId], references: [id])
+
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
@@ -394,4 +413,109 @@ model UsersCoupon {
 
   @@index([id])
   @@map("users_coupons")
+}
+
+model Event {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  organizerId Int?          @db.UnsignedInt
+  Organizer   Organization? @relation("eventOrganizer", fields: [organizerId], references: [id])
+
+  title String?
+
+  slug       String?
+  content    String?    @db.LongText
+  eventType  EventType? @default(FREE)
+  categoryId Int?       @db.UnsignedInt
+  Category   Category?  @relation("eventCategory", fields: [categoryId], references: [id])
+
+  heldAt                DateTime?
+  registrationStartedAt DateTime?
+  registrationClosedAt  DateTime?
+
+  location     String?
+  locationLink String?
+
+  quota      Int?
+  basePrices Float?
+
+  enrollment Int?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser    User?              @relation("createdByRelationInEvent", fields: [createdBy], references: [id])
+  updatedByUser    User?              @relation("updatedByRelationInEvent", fields: [updatedBy], references: [id])
+  deletedByUser    User?              @relation("deletedByRelationInEvent", fields: [deletedBy], references: [id])
+  EventTransaction EventTransaction[] @relation("eventTransaction")
+
+  @@index([id])
+  @@map("events")
+}
+
+model EventTransaction {
+  id Int @id @default(autoincrement()) @db.UnsignedInt
+
+  eventId Int?   @db.UnsignedInt
+  Event   Event? @relation("eventTransaction", fields: [eventId], references: [id])
+
+  attendeeId Int?  @db.UnsignedInt
+  Attendee   User? @relation("attendee", fields: [attendeeId], references: [id])
+
+  review  String? @db.LongText
+  media   String?
+  ratings Int?
+
+  attendedAt DateTime?
+  paidAt     DateTime?
+  uniqueCode String?   @unique
+
+  finalPrices Float?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User? @relation("createdByRelationInEventTransaction", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("updatedByRelationInEventTransaction", fields: [updatedBy], references: [id])
+  deletedByUser User? @relation("deletedByRelationInEventTransaction", fields: [deletedBy], references: [id])
+
+  UserPointHistory UserPointHistory[] @relation("relatedEventTransaction")
+  UsersCoupon      UsersCoupon[]      @relation("relatedTransactonFromCoupon")
+
+  @@index([id])
+  @@index([uniqueCode])
+  @@map("event_transactions")
+}
+
+enum EventType {
+  PAID
+  FREE
+}
+
+model Category {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String?
+  displayName String?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+  createdBy Int?      @db.UnsignedInt
+  updatedBy Int?      @db.UnsignedInt
+  deletedBy Int?      @db.UnsignedInt
+
+  createdByUser User?   @relation("createdByRelationInCategory", fields: [createdBy], references: [id])
+  updatedByUser User?   @relation("updatedByRelationInCategory", fields: [updatedBy], references: [id])
+  deletedByUser User?   @relation("deletedByRelationInCategory", fields: [deletedBy], references: [id])
+  Event         Event[] @relation("eventCategory")
+  @@index([id])
+  @@map("categories")
 }
