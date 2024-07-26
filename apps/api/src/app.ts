@@ -8,21 +8,27 @@ import express, {
   Router,
 } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser'
 import { PORT } from './config';
-import { SampleRouter } from './routers/sample.router';
+// import { SampleRouter } from './routers/sample.router';
+import { AuthRouter } from './routers/auth.router';
+import ServerMiddleware from './middlewares/server.middleware';
 
 export default class App {
   private app: Express;
+  private serverMiddleware : ServerMiddleware
 
   constructor() {
     this.app = express();
     this.configure();
+    this.serverMiddleware = new ServerMiddleware()
     this.routes();
     this.handleError();
   }
 
   private configure(): void {
     this.app.use(cors());
+    this.app.use(cookieParser());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
   }
@@ -31,7 +37,7 @@ export default class App {
     // not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       if (req.path.includes('/api/')) {
-        res.status(404).send('Not found !');
+        res.status(404).send(req.headers);
       } else {
         next();
       }
@@ -51,13 +57,17 @@ export default class App {
   }
 
   private routes(): void {
-    const sampleRouter = new SampleRouter();
+    // const sampleRouter = new SampleRouter();
+    const authRouter = new AuthRouter()
+
+    this.app.use(this.serverMiddleware.verifyApiKey)
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
 
-    this.app.use('/api/samples', sampleRouter.getRouter());
+    // this.app.use('/api/samples', sampleRouter.getRouter());
+    this.app.use('/api/auth', authRouter.getRouter());
   }
 
   public start(): void {
