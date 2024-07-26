@@ -1,22 +1,29 @@
 import crypto from 'crypto';
-import { PrismaClient } from '@prisma/client';
+import { EventType, PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 // import { createUserInDB } from '@/utils/seeder.utils';
 import { faker } from '@faker-js/faker';
 
-
 const prisma = new PrismaClient();
+const categories = [
+  { id: 1, displayName: 'Music', name: 'music' },
+  { id: 2, displayName: 'Art', name: 'art' },
+  { id: 3, displayName: 'Technology', name: 'technology' },
+  { id: 4, displayName: 'Sports', name: 'sports' },
+  { id: 5, displayName: 'Food', name: 'food' },
+  { id: 6, displayName: 'Education', name: 'education' },
+];
 
- async function setDateNowAndAddMonth(month: number) {
+async function setDateNowAndAddMonth(month: number) {
   const newDate = new Date();
   newDate.setMonth(newDate.getMonth() + month);
   return newDate;
 }
-async function randomString(length:number = 10) {
+async function randomString(length: number = 10) {
   return crypto.randomBytes(length).toString('hex');
 }
 
- interface UserSeedInterface {
+interface UserSeedInterface {
   middleName?: string | undefined;
   referal?: string | undefined;
   firstName: string;
@@ -39,40 +46,62 @@ async function createUserSeed(): Promise<UserSeedInterface> {
     lastName: lastName,
   });
   return {
-    firstName : firstName,
-    lastName : lastName,
-    password :password,
-    email :email,
-    username : username,
-    middleName: faker.person.middleName()
-  }
+    firstName: firstName,
+    lastName: lastName,
+    password: password,
+    email: email,
+    username: username,
+    middleName: faker.person.middleName(),
+  };
 }
 
-export async function createUserSeedBulk(howMany:number = 5) : Promise<UserSeedInterface[]> {
-  let stack : UserSeedInterface[] = []
+async function makeEvent(orgId: number) {
+  return {
+    title: faker.lorem.words(3),
+    slug: faker.lorem.slug(),
+    content: faker.lorem.paragraphs(2),
+    eventType: EventType.PAID,
+    categoryId: faker.helpers.arrayElement(categories).id,
+    heldAt: faker.date.future({ refDate: await setDateNowAndAddMonth(3) }),
+    registrationStartedAt: faker.date.recent(),
+    registrationClosedAt: faker.date.future({
+      refDate: await setDateNowAndAddMonth(5),
+    }),
+    location: faker.location.city(),
+    locationLink: faker.internet.url(),
+    quota: faker.number.int({ min: 100, max: 200 }),
+    basePrices: parseFloat(faker.commerce.price({ min: 50000, max: 1000000 })),
+    enrollment: faker.number.int({ min: 0, max: 99 }),
+    organizerId: orgId,
+  };
+}
+
+export async function createUserSeedBulk(
+  howMany: number = 5,
+): Promise<UserSeedInterface[]> {
+  let stack: UserSeedInterface[] = [];
   for (let i = 0; i < howMany; i++) {
-    stack.push(await createUserSeed())
+    stack.push(await createUserSeed());
   }
-  return stack
+  return stack;
 }
 
-export async function createUserInDB(howMany:number  = 5 ) {
+export async function createUserInDB(howMany: number = 5) {
   try {
     const users = await createUserSeedBulk(howMany);
     const createdUsers = [];
-    let reff : string|null = null
+    let reff: string | null = null;
 
-    for (const [i,record] of users.entries()) {
+    for (const [i, record] of users.entries()) {
       const additional = {
         referalCode: (await randomString(5)).toUpperCase(),
       };
       let getBonus = false;
       if (reff) {
-        record.referal = reff as string
-
-      } 
+        record.referal = reff as string;
+      }
       const referalBelongsTo = await prisma.user.findUnique({
-        where: { referalCode: record.referal||'13sd', deletedAt: null },
+        where: { referalCode: record.referal || '13sd', deletedAt: null },
       });
 
       console.log(referalBelongsTo);
@@ -164,16 +193,12 @@ export async function createUserInDB(howMany:number  = 5 ) {
       });
 
       createdUsers.push({
-        username: createdUser.username,
-        email: createdUser.email,
-        createdAt: createdUser.createdAt!,
-        updatedAt: createdUser.updatedAt,
-        referalCode: createdUser.referalCode,
+        ...createdUser,
       });
-      if (i%2===0) {
-        reff = createdUser.referalCode
+      if (i % 2 === 0) {
+        reff = createdUser.referalCode;
       } else {
-        reff = null
+        reff = null;
       }
     }
 
@@ -189,9 +214,6 @@ export async function createUserInDB(howMany:number  = 5 ) {
     };
   }
 }
-
-
-
 
 async function main() {
   try {
@@ -289,14 +311,14 @@ async function main() {
         RoleHavePermission: {
           createMany: {
             data: [
-              { permissionId: 1,}, //createdBy: 1 }, // Superuser permission
-              { permissionId: 2,}, //createdBy: 1 }, // Ownership permission
-              { permissionId: 3,}, //createdBy: 1 }, // Create Event permission
-              { permissionId: 4,}, //createdBy: 1 }, // Update Event permission
-              { permissionId: 5,}, //createdBy: 1 }, // Delete Event permission
-              { permissionId: 6,}, //createdBy: 1 }, // View Event permission
-              { permissionId: 7,}, //createdBy: 1 }, // Access Event permission
-              { permissionId: 8,}, //createdBy: 1 }, // Event Attendee privilege
+              { permissionId: 1 }, //createdBy: 1 }, // Superuser permission
+              { permissionId: 2 }, //createdBy: 1 }, // Ownership permission
+              { permissionId: 3 }, //createdBy: 1 }, // Create Event permission
+              { permissionId: 4 }, //createdBy: 1 }, // Update Event permission
+              { permissionId: 5 }, //createdBy: 1 }, // Delete Event permission
+              { permissionId: 6 }, //createdBy: 1 }, // View Event permission
+              { permissionId: 7 }, //createdBy: 1 }, // Access Event permission
+              { permissionId: 8 }, //createdBy: 1 }, // Event Attendee privilege
             ],
             skipDuplicates: true,
           },
@@ -354,18 +376,20 @@ async function main() {
     });
 
     const coupon = prisma.coupon.create({
-      data:{
+      data: {
         id: 1,
-        code : crypto.randomBytes(7).toString('hex').toUpperCase(),
+        code: crypto.randomBytes(7).toString('hex').toUpperCase(),
         //createdBy: 1,
         issuedBy: 1,
         monthCouponAlive: 3,
-        title: "New Comer Welcome",
-        description: "Get 10% discount to desired event",
+        title: 'New Comer Welcome',
+        description: 'Get 10% discount to desired event',
         discount: 10,
-        unit: "percent",
-      }
-    })
+        unit: 'percent',
+      },
+    });
+
+    const category = prisma.category.createMany({data: categories})
 
     // Wait for all promises to complete before committing the transaction
     const [
@@ -378,6 +402,7 @@ async function main() {
       organizationResult,
       roleAssignment,
       couponCreated,
+      categoryCreated
     ] = await prisma.$transaction([
       superuser,
       superUserUpdate,
@@ -388,8 +413,8 @@ async function main() {
       organization,
       assignSuperuserRole,
       coupon,
+      category
     ]);
-
 
     console.log({
       user,
@@ -400,13 +425,33 @@ async function main() {
       organizationResult,
       roleAssignment,
       updateSuperUser,
-      couponCreated
+      couponCreated,
     });
 
-    const bulk = await createUserInDB(40)
+    const bulk = await createUserInDB(40);
+    const orgs = await prisma.organization.findMany();
+
+    // const events = await prisma.$transaction(async (pr) => {
+    //   const bulkEv = orgs.map(async (e) =>
+    //     await pr.event.create({
+    //       data: {
+    //         ...(await makeEvent(e.id)),
+    //       },
+    //     }),
+    //   );
+    //   return bulkEv;
+    // });
+
+    const events = await Promise.all(
+      orgs.map(async (e) => await prisma.event.create({
+        data: await makeEvent(e.id),
+      }))
+    );
 
     console.log(bulk);
-    
+    console.log(events);
+
+    // go continue to make me the event seeder
   } catch (e) {
     console.error(e);
     process.exit(1);
