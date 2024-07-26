@@ -62,10 +62,11 @@ async function makeEvent(orgId: number) {
     content: faker.lorem.paragraphs(2),
     eventType: EventType.PAID,
     categoryId: faker.helpers.arrayElement(categories).id,
-    heldAt: faker.date.future({ refDate: await setDateNowAndAddMonth(3) }),
-    registrationStartedAt: faker.date.recent(),
-    registrationClosedAt: faker.date.future({
-      refDate: await setDateNowAndAddMonth(5),
+    heldAt: faker.date.soon({ refDate: await setDateNowAndAddMonth(2), days:20 }),
+    registrationStartedAt: faker.date.recent({days:10}),
+    registrationClosedAt: faker.date.soon({
+      refDate: await setDateNowAndAddMonth(1),
+      days: 20
     }),
     location: faker.location.city(),
     locationLink: faker.internet.url(),
@@ -389,7 +390,7 @@ async function main() {
       },
     });
 
-    const category = prisma.category.createMany({data: categories})
+    const category = prisma.category.createMany({ data: categories });
 
     // Wait for all promises to complete before committing the transaction
     const [
@@ -402,7 +403,7 @@ async function main() {
       organizationResult,
       roleAssignment,
       couponCreated,
-      categoryCreated
+      categoryCreated,
     ] = await prisma.$transaction([
       superuser,
       superUserUpdate,
@@ -413,7 +414,7 @@ async function main() {
       organization,
       assignSuperuserRole,
       coupon,
-      category
+      category,
     ]);
 
     console.log({
@@ -443,9 +444,12 @@ async function main() {
     // });
 
     const events = await Promise.all(
-      orgs.map(async (e) => await prisma.event.create({
-        data: await makeEvent(e.id),
-      }))
+      orgs.map(
+        async (e) =>
+          await prisma.event.create({
+            data: await makeEvent(e.id),
+          }),
+      ),
     );
 
     console.log(bulk);
