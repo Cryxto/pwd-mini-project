@@ -1,9 +1,6 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-
 export default function Home() {
   return (
-    <main className={styles.main}>
+    <main className='self-center'>
      <h1>Heiiii</h1>
     </main>
   )

@@ -18,10 +18,31 @@ export class AuthRouter {
     // this.router.get('/', this.authController.getSampleData);
     // this.router.get('/:id', this.authController.getSampleDataById);
     this.router.post(
-      '/register',
-      this.authMiddleware.registerValidation,
-      this.authController.register,
+      '/sign-up',
+      this.authMiddleware.signUpValidation,
+      this.authController.signUp,
     );
+    this.router.post(
+      '/sign-in',
+      this.authMiddleware.signInValidation,
+      this.authController.sigIn,
+    );
+    this.router.get(
+      '/test',
+      this.authMiddleware.shouldSignIn,
+    );
+    this.router.get(
+      '/check-email/:email',
+      this.authController.checkEmail
+    )
+    this.router.get(
+      '/check-username/:username',
+      this.authController.checkUsername
+    )
+    this.router.get(
+      '/check-referal/:referal',
+      this.authController.checkReferal
+    )
   }
 
   getRouter(): Router {
