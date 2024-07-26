@@ -42,7 +42,7 @@ class AuthRepository {
         UsersCoupon: {
           create: {
             couponId: 1,
-            createdBy: 1,
+            //createdBy: 1,
             expiredAt: await setDateNowAndAddMonth(3),
           },
         },
@@ -54,11 +54,11 @@ class AuthRepository {
             ...record,
             ...additional,
             ...(getBonus ? bonuses : {}),
-            createdBy: 1,
+            //createdBy: 1,
             Organization: {
               create: {
                 description: 'Hola',
-                createdBy: 1,
+                //createdBy: 1,
                 name:
                   record.firstName +
                   ' ' +
@@ -71,7 +71,7 @@ class AuthRepository {
                     name: additional.referalCode + 'ownership',
                     description: 'Hola',
                     displayName: additional.referalCode + ' Ownership',
-                    createdBy: 1,
+                    //createdBy: 1,
                     OrganizationRoleHavePermission: {
                       createMany: {
                         data: [
@@ -99,14 +99,14 @@ class AuthRepository {
           data: {
             userId: newUser.id,
             organizationRoleId: newUser.Organization[0].OrganizationRole[0].id,
-            createdBy: 1,
+            //createdBy: 1,
           },
         });
         if (getBonus && referalBelongsTo?.username!=='system') {
 
           await pr.userPointHistory.create({
             data: {
-              createdBy: 1,
+              //createdBy: 1,
               points: 10000,
               expiredAt: await setDateNowAndAddMonth(3),
               userInvitedId: newUser.id,

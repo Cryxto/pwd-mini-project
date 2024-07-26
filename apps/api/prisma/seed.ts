@@ -93,7 +93,7 @@ export async function createUserInDB(howMany:number  = 5 ) {
         UsersCoupon: {
           create: {
             couponId: 1,
-            createdBy: 1,
+            //createdBy: 1,
             expiredAt: await setDateNowAndAddMonth(3),
           },
         },
@@ -105,18 +105,18 @@ export async function createUserInDB(howMany:number  = 5 ) {
             ...record,
             ...additional,
             ...(getBonus ? bonuses : {}),
-            createdBy: 1,
+            //createdBy: 1,
             Organization: {
               create: {
                 description: 'Hola',
-                createdBy: 1,
+                //createdBy: 1,
                 name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
                 OrganizationRole: {
                   create: {
                     name: `${additional.referalCode}ownership`,
                     description: 'Hola',
                     displayName: `${additional.referalCode} Ownership`,
-                    createdBy: 1,
+                    //createdBy: 1,
                     OrganizationRoleHavePermission: {
                       createMany: {
                         data: [
@@ -144,14 +144,14 @@ export async function createUserInDB(howMany:number  = 5 ) {
           data: {
             userId: newUser.id,
             organizationRoleId: newUser.Organization[0].OrganizationRole[0].id,
-            createdBy: 1,
+            //createdBy: 1,
           },
         });
 
         if (getBonus && referalBelongsTo?.username !== 'system') {
           await pr.userPointHistory.create({
             data: {
-              createdBy: 1,
+              //createdBy: 1,
               points: 10000,
               expiredAt: await setDateNowAndAddMonth(3),
               userInvitedId: newUser.id,
@@ -212,7 +212,7 @@ async function main() {
     });
     const superUserUpdate = prisma.user.update({
       data: {
-        createdBy: 1,
+        //createdBy: 1,
       },
       where: { id: 1 },
     });
@@ -225,56 +225,56 @@ async function main() {
           name: 'superuser',
           displayName: 'Superuser',
           description: 'For system only',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 2,
           name: 'ownership',
           displayName: 'Ownership',
           description: 'Organization ownership permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 3,
           name: 'create_event',
           displayName: 'Create Event',
           description: 'Create event permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 4,
           name: 'update_event',
           displayName: 'Update Event',
           description: 'Update event permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 5,
           name: 'delete_event',
           displayName: 'Delete Event',
           description: 'Delete event permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 6,
           name: 'view_event',
           displayName: 'View Event',
           description: 'View event permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 7,
           name: 'access_event',
           displayName: 'Access Event',
           description: 'Access event permission',
-          createdBy: 1,
+          //createdBy: 1,
         },
         {
           id: 8,
           name: 'event_attendee_privilege',
           displayName: 'Event Attendee',
           description: 'Event attendee privilege',
-          createdBy: 1,
+          //createdBy: 1,
         },
       ],
       skipDuplicates: true,
@@ -285,18 +285,18 @@ async function main() {
         name: 'superuser',
         displayName: 'Superuser',
         description: 'Has all permissions',
-        createdBy: 1,
+        //createdBy: 1,
         RoleHavePermission: {
           createMany: {
             data: [
-              { permissionId: 1, createdBy: 1 }, // Superuser permission
-              { permissionId: 2, createdBy: 1 }, // Ownership permission
-              { permissionId: 3, createdBy: 1 }, // Create Event permission
-              { permissionId: 4, createdBy: 1 }, // Update Event permission
-              { permissionId: 5, createdBy: 1 }, // Delete Event permission
-              { permissionId: 6, createdBy: 1 }, // View Event permission
-              { permissionId: 7, createdBy: 1 }, // Access Event permission
-              { permissionId: 8, createdBy: 1 }, // Event Attendee privilege
+              { permissionId: 1,}, //createdBy: 1 }, // Superuser permission
+              { permissionId: 2,}, //createdBy: 1 }, // Ownership permission
+              { permissionId: 3,}, //createdBy: 1 }, // Create Event permission
+              { permissionId: 4,}, //createdBy: 1 }, // Update Event permission
+              { permissionId: 5,}, //createdBy: 1 }, // Delete Event permission
+              { permissionId: 6,}, //createdBy: 1 }, // View Event permission
+              { permissionId: 7,}, //createdBy: 1 }, // Access Event permission
+              { permissionId: 8,}, //createdBy: 1 }, // Event Attendee privilege
             ],
             skipDuplicates: true,
           },
@@ -309,7 +309,7 @@ async function main() {
         name: 'organization_owner',
         displayName: 'Organization Owner',
         description: 'Full CRUD permissions for events',
-        createdBy: 1,
+        //createdBy: 1,
         RoleHavePermission: {
           createMany: {
             data: [
@@ -330,7 +330,7 @@ async function main() {
         name: 'visitor',
         displayName: 'Visitor',
         description: 'No special permissions',
-        createdBy: 1,
+        //createdBy: 1,
       },
     });
 
@@ -340,7 +340,7 @@ async function main() {
         name: 'myEvent',
         description: 'Default organization description',
         ownerId: 1,
-        createdBy: 1,
+        //createdBy: 1,
       },
     });
 
@@ -349,7 +349,7 @@ async function main() {
       data: {
         userId: 1,
         roleId: 1, // Assuming Superuser Role ID is 1
-        createdBy: 1,
+        //createdBy: 1,
       },
     });
 
@@ -357,7 +357,7 @@ async function main() {
       data:{
         id: 1,
         code : crypto.randomBytes(7).toString('hex').toUpperCase(),
-        createdBy: 1,
+        //createdBy: 1,
         issuedBy: 1,
         monthCouponAlive: 3,
         title: "New Comer Welcome",
