@@ -13,6 +13,7 @@ import { PORT } from './config';
 // import { SampleRouter } from './routers/sample.router';
 import { AuthRouter } from './routers/auth.router';
 import ServerMiddleware from './middlewares/server.middleware';
+import { EventRouter } from './routers/event.router';
 
 export default class App {
   private app: Express;
@@ -59,6 +60,7 @@ export default class App {
   private routes(): void {
     // const sampleRouter = new SampleRouter();
     const authRouter = new AuthRouter()
+    const eventRouter = new EventRouter()
 
     this.app.use(this.serverMiddleware.verifyApiKey)
 
@@ -68,6 +70,7 @@ export default class App {
 
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/auth', authRouter.getRouter());
+    this.app.use('/api/event', eventRouter.getRouter());
   }
 
   public start(): void {

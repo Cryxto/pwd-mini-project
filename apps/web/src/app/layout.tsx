@@ -34,7 +34,7 @@ export default function RootLayout({
             <CheckAuth />
             <div className="w-full flex items-center justify-center flex-col max-w-full bg-base-100 overflow-x-clip">
               <Header />
-              <main className="flex flex-1 flex-col w-full min-h-screen py-2">
+              <main className="flex flex-1 flex-col w-full min-h-screen">
                 {children}
               </main>
               <Footer />

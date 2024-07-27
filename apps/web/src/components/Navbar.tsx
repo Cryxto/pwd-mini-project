@@ -107,7 +107,7 @@ export function Navbar() {
   }, [state, loading]);
 
   return (
-    <nav className="navbar bg-base-100 flex justify-between items-center w-full">
+    <nav className="navbar bg-base-100 flex justify-between items-center w-full lg:mx-5">
       <div className="navbar-start">
         <div ref={mobileDropdownRef} className="dropdown">
           <button
@@ -135,8 +135,8 @@ export function Navbar() {
             className={`menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}
           >
             <li>
-              <Link href="/search-event" onClick={handleMobileLinkClick}>
-                Search Event
+              <Link href="/event" onClick={handleMobileLinkClick}>
+                Event
               </Link>
             </li>
             <li>
@@ -189,10 +189,10 @@ export function Navbar() {
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link
-              href="/search-event"
+              href="/event"
               className={`btn btn-ghost w-full text-left ${pathname === '/search-event' ? 'underline' : ''}`}
             >
-              Search Event
+              Event
             </Link>
           </li>
           <li>
@@ -315,6 +315,15 @@ export function Navbar() {
                         onClick={handleProfileLinkClick}
                       >
                         Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/admin/dashboard"
+                        className="justify-between"
+                        onClick={handleProfileLinkClick}
+                      >
+                        My Organization
                       </Link>
                     </li>
                     <li>

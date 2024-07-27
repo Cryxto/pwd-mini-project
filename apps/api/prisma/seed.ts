@@ -56,9 +56,10 @@ async function createUserSeed(): Promise<UserSeedInterface> {
 }
 
 async function makeEvent(orgId: number) {
+  const title = faker.lorem.words(3)
   return {
-    title: faker.lorem.words(3),
-    slug: faker.lorem.slug(),
+    title: title,
+    slug: title.toLowerCase().split(' ').join('-'),
     content: faker.lorem.paragraphs(2),
     eventType: EventType.PAID,
     categoryId: faker.helpers.arrayElement(categories).id,
@@ -70,9 +71,10 @@ async function makeEvent(orgId: number) {
     }),
     location: faker.location.city(),
     locationLink: faker.internet.url(),
-    quota: faker.number.int({ min: 100, max: 200 }),
-    basePrices: parseFloat(faker.commerce.price({ min: 50000, max: 1000000 })),
-    enrollment: faker.number.int({ min: 0, max: 99 }),
+    quota: faker.number.int({ min: 10, max: 100 }),
+    basePrices: parseFloat(faker.commerce.price({ min: 50000, max: 100000 })),
+    media : faker.image.url(),
+    // enrollment: faker.number.int({ min: 0, max: 99 }),
     organizerId: orgId,
   };
 }
@@ -92,6 +94,7 @@ export async function createUserInDB(howMany: number = 5) {
     const users = await createUserSeedBulk(howMany);
     const createdUsers = [];
     let reff: string | null = null;
+    let approved: boolean = false;
 
     for (const [i, record] of users.entries()) {
       const additional = {
@@ -128,6 +131,45 @@ export async function createUserInDB(howMany: number = 5) {
           },
         },
       };
+      const orgData: {
+        description: string;
+        name: string;
+        approvedAt: Date | null;
+        OrganizationRole: {
+          create: {
+            name: string;
+            description: string;
+            displayName: string;
+            OrganizationRoleHavePermission: {
+              createMany: {
+                data: {
+                  permissionId: number;
+                }[];
+              };
+            };
+          };
+        };
+      } = {
+        description: 'Hola',
+        name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
+        approvedAt: approved ? new Date() : null,
+        OrganizationRole: {
+          create: {
+            name: `${additional.referalCode}ownership`,
+            description: 'Hola',
+            displayName: `${additional.referalCode} Ownership`,
+            OrganizationRoleHavePermission: {
+              createMany: {
+                data: [
+                  {
+                    permissionId: 2,
+                  },
+                ],
+              },
+            },
+          },
+        },
+      };
 
       const createdUser = await prisma.$transaction(async (pr) => {
         const newUser = await pr.user.create({
@@ -136,11 +178,13 @@ export async function createUserInDB(howMany: number = 5) {
             ...additional,
             ...(getBonus ? bonuses : {}),
             //createdBy: 1,
+            // ...(approved? orgData: {}),
             Organization: {
               create: {
                 description: 'Hola',
                 //createdBy: 1,
                 name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
+                approvedAt : (approved? new Date(): null),
                 OrganizationRole: {
                   create: {
                     name: `${additional.referalCode}ownership`,
@@ -198,8 +242,10 @@ export async function createUserInDB(howMany: number = 5) {
       });
       if (i % 2 === 0) {
         reff = createdUser.referalCode;
+        approved = true
       } else {
         reff = null;
+        approved = false
       }
     }
 
@@ -429,7 +475,7 @@ async function main() {
       couponCreated,
     });
 
-    const bulk = await createUserInDB(40);
+    const bulk = await createUserInDB(80);
     const orgs = await prisma.organization.findMany();
 
     // const events = await prisma.$transaction(async (pr) => {
@@ -444,11 +490,15 @@ async function main() {
     // });
 
     const events = await Promise.all(
-      orgs.map(
+      orgs.filter(
         async (e) =>
-          await prisma.event.create({
-            data: await makeEvent(e.id),
-          }),
+          {
+            if (e.approvedAt) {
+              return await prisma.event.create({
+                data: await makeEvent(e.id),
+              })
+            }
+          }
       ),
     );
 

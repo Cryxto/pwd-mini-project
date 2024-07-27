@@ -237,6 +237,7 @@ model Organization {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
+  approvedAt DateTime?
 
   // createdBy Int?      @db.UnsignedInt
   // updatedBy Int?      @db.UnsignedInt
@@ -447,6 +448,7 @@ model Event {
   content    String?    @db.LongText
   eventType  EventType? @default(FREE)
   categoryId Int?       @db.UnsignedInt
+  media String?
   Category   Category?  @relation("eventCategory", fields: [categoryId], references: [id])
 
   heldAt                DateTime?

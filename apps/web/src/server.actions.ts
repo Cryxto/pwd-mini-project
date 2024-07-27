@@ -3,6 +3,7 @@ import axios from 'axios';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { User } from './stores/user/userAnnotation';
+import { EventInterface } from './interfaces/event.interface';
 
 const backEndUrl = process.env.BACKEND_URL;
 const apiKey = process.env.API_KEY!;
@@ -59,8 +60,8 @@ export async function signInProcess({
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 5 * 1000,
     });
-    console.log(res.data.auth_token);
-    console.log(jwtSecret);
+    // console.log(res.data.auth_token);
+    // console.log(jwtSecret);
 
     const jwtRes = await jwtVerify(res.data.auth_token, jwtSecret);
     delete jwtRes.payload.iat;
@@ -165,13 +166,41 @@ export async function signUpProceed({
 
   return result;
 }
-export async function signOut() : Promise<boolean> {
-  const verify = await verifyToken()
-  let status =false
+export async function signOut(): Promise<boolean> {
+  const verify = await verifyToken();
+  let status = false;
   if (verify.ok) {
-    cookies().delete('auth_token')
-    cookies().delete('verification')
-    status = true
+    cookies().delete('auth_token');
+    cookies().delete('verification');
+    status = true;
   }
-  return status
+  return status;
+}
+
+export async function getAllEvent(): Promise<{
+  ok: boolean;
+  data?: Array<any> | null | {data: EventInterface};
+  error?: string | null | Array<any>;
+}> {
+  let res: {
+    ok: boolean;
+    data?: Array<any> | null;
+    error?: string | null | Array<any>;
+  } = {
+    ok: false,
+    data: null,
+  };
+  try {
+    const data = await axiosInstance.get('/event', {
+      withCredentials: true,
+      signal: AbortSignal.timeout(8000),
+      baseURL: backEndUrl,
+    });
+    res.data = data.data.data.data;
+    res.ok = true;
+  } catch (error: any) {
+    res.error = error.response;
+    res.ok = false;
+  }
+  return res;
 }

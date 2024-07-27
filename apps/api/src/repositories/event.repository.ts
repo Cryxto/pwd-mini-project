@@ -1,20 +1,29 @@
-import bcrypt from 'bcrypt';
 import prisma from '@/prisma';
-import { randomString } from '@/utils/string.utils';
-import { setDateNowAndAddMonth } from '@/utils/date.utils';
 
 class EventRepository {
-  async createEvent(record: any) {
+  async allEvent(): Promise<{
+    ok: boolean;
+    error?: any;
+    data?: object | null;
+  }> {
     try {
-      const events = await prisma.event.findFirst({where: {id:1}})
+      const events = await prisma.event.findMany({
+        include: {
+          Organizer: true,
+          Category: true
+        },
+      });
+      return {
+        ok: true,
+        data: events,
+      };
     } catch (error) {
       return {
-        
+        ok: false,
+        error: error,
       };
     }
   }
-
-  
 }
 
-export const authRepository = new EventRepository();
+export const eventRepository = new EventRepository();
