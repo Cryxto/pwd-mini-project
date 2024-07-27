@@ -5,15 +5,19 @@ const shouldNotSignedInRoutes = ['/sign-in', '/sign-up'];
 
 export async function middleware(req: NextRequest) {
   const apiKey = process.env.API_KEY!;
-  
+
   // Handle protected routes
   if (shouldNotSignedInRoutes.includes(req.nextUrl.pathname)) {
-    
     if (await isLogin(req)) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }
 
+  if (req.nextUrl.pathname.startsWith('/event/checkout')) {
+    if (!await isLogin(req)) {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
+    }
+  }
   // Clone the request headers and append the API key
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-api-key', apiKey);
@@ -39,4 +43,4 @@ export const config = {
      */
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-}
+};

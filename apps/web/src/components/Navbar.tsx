@@ -113,7 +113,10 @@ export function Navbar() {
           <button
             tabIndex={0}
             className="btn btn-ghost lg:hidden"
-            onClick={() => setMobileDropdownOpen(!isMobileDropdownOpen)}
+            onClick={() => {
+              setMobileDropdownOpen(!isMobileDropdownOpen);
+              router.prefetch('/event');
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -139,11 +142,11 @@ export function Navbar() {
                 Event
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/category" onClick={handleMobileLinkClick}>
                 Category
               </Link>
-            </li>
+            </li> */}
             <li ref={themeDropdownRef}>
               <button
                 tabIndex={0}
@@ -195,14 +198,14 @@ export function Navbar() {
               Event
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               href="/category"
               className={`btn btn-ghost w-full text-left ${pathname === '/category' ? 'underline' : ''}`}
             >
               Category
             </Link>
-          </li>
+          </li> */}
           <li ref={themeDropdownRef} className="relative">
             <button
               tabIndex={0}

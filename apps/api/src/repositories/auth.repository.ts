@@ -32,16 +32,17 @@ class AuthRepository {
       delete record.referal;
 
       const bonuses = {
-        UserPointHistory: {
-          create: {
-            expiredAt: await setDateNowAndAddMonth(3),
-            refererId: getBonus ? referalBelongsTo?.id : null,
-            points: 10000,
-          },
-        },
+        // UserPointHistory: {
+        //   create: {
+        //     expiredAt: await setDateNowAndAddMonth(3),
+        //     refererId: getBonus ? referalBelongsTo?.id : null,
+        //     points: 10000,
+        //   },
+        // },
         UsersCoupon: {
           create: {
-            couponId: 1,
+            couponId: 2,
+            refererId : referalBelongsTo?.id,
             //createdBy: 1,
             expiredAt: await setDateNowAndAddMonth(3),
           },

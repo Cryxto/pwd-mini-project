@@ -15,4 +15,17 @@ export class EventController {
       ok: false
     })
   }
+  public async getSingleEvent (req: Request, res: Response): Promise<void | Response> {
+    const data = await eventRepository.singleEvent(req.params.slug)
+    if (data.ok) {
+      return res.status(200).send({
+        data : data,
+        ok : true
+      })
+    }
+    return res.status(500).send({
+      error: data.error,
+      ok: false
+    })
+  }
 }

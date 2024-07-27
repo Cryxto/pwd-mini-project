@@ -111,65 +111,68 @@ export async function createUserInDB(howMany: number = 5) {
       console.log(referalBelongsTo);
 
       if (referalBelongsTo) {
+        
         getBonus = true;
       }
       delete record.referal;
 
       const bonuses = {
-        UserPointHistory: {
-          create: {
-            expiredAt: await setDateNowAndAddMonth(3),
-            refererId: getBonus ? referalBelongsTo?.id : null,
-            points: 10000,
-          },
-        },
+        // UserPointHistory: {
+        //   create: {
+        //     expiredAt: await setDateNowAndAddMonth(3),
+        //     refererId: getBonus ? referalBelongsTo?.id : null,
+        //     points: 10000,
+        //   },
+        // },
         UsersCoupon: {
           create: {
-            couponId: 1,
+            couponId: 2,
             //createdBy: 1,
+            refererId: referalBelongsTo?.id,
             expiredAt: await setDateNowAndAddMonth(3),
+
           },
         },
       };
-      const orgData: {
-        description: string;
-        name: string;
-        approvedAt: Date | null;
-        OrganizationRole: {
-          create: {
-            name: string;
-            description: string;
-            displayName: string;
-            OrganizationRoleHavePermission: {
-              createMany: {
-                data: {
-                  permissionId: number;
-                }[];
-              };
-            };
-          };
-        };
-      } = {
-        description: 'Hola',
-        name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
-        approvedAt: approved ? new Date() : null,
-        OrganizationRole: {
-          create: {
-            name: `${additional.referalCode}ownership`,
-            description: 'Hola',
-            displayName: `${additional.referalCode} Ownership`,
-            OrganizationRoleHavePermission: {
-              createMany: {
-                data: [
-                  {
-                    permissionId: 2,
-                  },
-                ],
-              },
-            },
-          },
-        },
-      };
+      // const orgData: {
+      //   description: string;
+      //   name: string;
+      //   approvedAt: Date | null;
+      //   OrganizationRole: {
+      //     create: {
+      //       name: string;
+      //       description: string;
+      //       displayName: string;
+      //       OrganizationRoleHavePermission: {
+      //         createMany: {
+      //           data: {
+      //             permissionId: number;
+      //           }[];
+      //         };
+      //       };
+      //     };
+      //   };
+      // } = {
+      //   description: 'Hola',
+      //   name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
+      //   approvedAt: approved ? new Date() : null,
+      //   OrganizationRole: {
+      //     create: {
+      //       name: `${additional.referalCode}ownership`,
+      //       description: 'Hola',
+      //       displayName: `${additional.referalCode} Ownership`,
+      //       OrganizationRoleHavePermission: {
+      //         createMany: {
+      //           data: [
+      //             {
+      //               permissionId: 2,
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   },
+      // };
 
       const createdUser = await prisma.$transaction(async (pr) => {
         const newUser = await pr.user.create({
@@ -240,11 +243,11 @@ export async function createUserInDB(howMany: number = 5) {
       createdUsers.push({
         ...createdUser,
       });
+      reff = createdUser.referalCode;
       if (i % 2 === 0) {
-        reff = createdUser.referalCode;
         approved = true
       } else {
-        reff = null;
+        // reff = null;
         approved = false
       }
     }
@@ -409,6 +412,7 @@ async function main() {
         name: 'myEvent',
         description: 'Default organization description',
         ownerId: 1,
+        approvedAt : new Date()
         //createdBy: 1,
       },
     });
@@ -422,18 +426,31 @@ async function main() {
       },
     });
 
-    const coupon = prisma.coupon.create({
-      data: {
-        id: 1,
-        code: crypto.randomBytes(7).toString('hex').toUpperCase(),
-        //createdBy: 1,
-        issuedBy: 1,
-        monthCouponAlive: 3,
-        title: 'New Comer Welcome',
-        description: 'Get 10% discount to desired event',
-        discount: 10,
-        unit: 'percent',
-      },
+    const coupon = prisma.coupon.createMany({
+      data: [
+        {
+          id: 1,
+          code: crypto.randomBytes(7).toString('hex').toUpperCase(),
+          //createdBy: 1,
+          issuedBy: 1,
+          monthCouponAlive: 3,
+          title: 'New Comer Welcome',
+          description: 'Get 10% discount to desired event',
+          discount: 10,
+          unit: 'percent',
+        },
+        {
+          id: 2,
+          code: crypto.randomBytes(7).toString('hex').toUpperCase(),
+          //createdBy: 1,
+          issuedBy: 1,
+          monthCouponAlive: 3,
+          title: 'Success Invite Someone',
+          description: 'Get 10% discount to desired event',
+          discount: 10,
+          unit: 'percent',
+        },
+      ],
     });
 
     const category = prisma.category.createMany({ data: categories });

@@ -13,7 +13,7 @@ interface ModalProps {
   children: React.ReactNode;
   closeButton?: boolean;
   scrollable?: boolean;
-  actions?: React.ReactNode;
+  actions?: React.ReactNode[];
 }
 
 const getFullWidthRespectingScrollbarInVw = () => {
@@ -93,7 +93,7 @@ const Modal = forwardRef<HTMLDialogElement, ModalProps>(
           <div className="modal-content">{children}</div>
           <div className="flex flex-wrap gap-2 justify-end">
             {actions && <div className="modal-action">{actions}</div>}
-            {closeButton && !actions && (
+            {!actions && closeButton && (
               <div className="modal-action">
                 <form method="dialog">
                   <button className="btn btn-error" onClick={onClose}>

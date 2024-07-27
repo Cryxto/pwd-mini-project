@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -18,31 +19,30 @@ model Sample {
 }
 
 model User {
-  id          Int       @id @default(autoincrement()) @db.UnsignedInt
-  username    String    @unique @db.VarChar(255)
-  firstName   String    @db.VarChar(255)
-  lastName    String    @db.VarChar(255)
-  password    String    @db.VarChar(255)
-  email       String    @unique @db.VarChar(255)
-  middleName  String?   @db.VarChar(255)
-  referalCode String    @unique @db.VarChar(255)
-  
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-  deletedAt   DateTime?
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  username    String  @unique @db.VarChar(255)
+  firstName   String  @db.VarChar(255)
+  lastName    String  @db.VarChar(255)
+  password    String  @db.VarChar(255)
+  email       String  @unique @db.VarChar(255)
+  middleName  String? @db.VarChar(255)
+  referalCode String  @unique @db.VarChar(255)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 
   RoleHaveUser UserHaveRole[] @relation("roleHaveUser")
   Organization Organization[] @relation("organizationOwnership")
 
   UserHaveRoleOnOrganization UserHaveRoleOnOrganization[] @relation("organizationRoleHaveUser")
-  
 
-  UserPointHistory    UserPointHistory[] @relation("userPointHistory")
-  RefererPointHistory UserPointHistory[] @relation("refererPointHistory")
+  UserPointHistory UserPointHistory[] @relation("userPointHistory")
+  // RefererPointHistory UserPointHistory[] @relation("refererPointHistory")
 
   UsersCoupon             UsersCoupon[]      @relation("usersCoupon")
   UserInvitedPointHistory UserPointHistory[] @relation("userInvitedPointHistory")
-  
+
   EventTransaction EventTransaction[] @relation("attendee")
   // createdBy Int? @db.UnsignedInt
   // updatedBy Int? @db.UnsignedInt
@@ -107,13 +107,11 @@ model User {
   //createdFromEventTransaction EventTransaction[] @relation("createdByRelationInEventTransaction")
   //updatedFromEventTransaction EventTransaction[] @relation("updatedByRelationInEventTransaction")
   //deletedFromEventTransaction EventTransaction[] @relation("deletedByRelationInEventTransaction")
-  
+
   //createdFromCategory         Category[]         @relation("createdByRelationInCategory")
   //updatedFromCategory         Category[]         @relation("updatedByRelationInCategory")
   //deletedFromCategory         Category[]         @relation("deletedByRelationInCategory")
-
-
-  
+  Referer UsersCoupon[] @relation("refererForUsersCoupon")
 
   @@index([username])
   @@index([email])
@@ -234,9 +232,9 @@ model Organization {
   ownerId     Int?    @db.UnsignedInt
   Owner       User?   @relation("organizationOwnership", fields: [ownerId], references: [id])
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  deletedAt DateTime?
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+  deletedAt  DateTime?
   approvedAt DateTime?
 
   // createdBy Int?      @db.UnsignedInt
@@ -344,8 +342,8 @@ model UserPointHistory {
   userId Int?  @db.UnsignedInt
   User   User? @relation("userPointHistory", fields: [userId], references: [id])
 
-  refererId Int?  @db.UnsignedInt
-  Referer   User? @relation("refererPointHistory", fields: [refererId], references: [id])
+  // refererId Int?  @db.UnsignedInt
+  // Referer   User? @relation("refererPointHistory", fields: [refererId], references: [id])
 
   userInvitedId Int?  @db.UnsignedInt
   UserInvited   User? @relation("userInvitedPointHistory", fields: [userInvitedId], references: [id])
@@ -417,6 +415,9 @@ model UsersCoupon {
   userId Int?  @db.UnsignedInt
   User   User? @relation("usersCoupon", fields: [userId], references: [id])
 
+  refererId Int?  @db.UnsignedInt
+  Referer   User? @relation("refererForUsersCoupon", fields: [refererId], references: [id])
+
   relatedTransactionId Int?              @db.UnsignedInt
   RelatedTransaction   EventTransaction? @relation("relatedTransactonFromCoupon", fields: [relatedTransactionId], references: [id])
 
@@ -444,11 +445,11 @@ model Event {
 
   title String?
 
-  slug       String?
+  slug       String?    @unique
   content    String?    @db.LongText
   eventType  EventType? @default(FREE)
   categoryId Int?       @db.UnsignedInt
-  media String?
+  media      String?
   Category   Category?  @relation("eventCategory", fields: [categoryId], references: [id])
 
   heldAt                DateTime?
@@ -478,6 +479,7 @@ model Event {
   EventTransaction EventTransaction[] @relation("eventTransaction")
 
   @@index([id])
+  @@index([slug])
   @@map("events")
 }
 

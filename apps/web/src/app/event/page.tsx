@@ -4,19 +4,23 @@ import { Card } from '@/components/Card';
 import Modal from '@/components/Modal';
 import { EventInterface } from '@/interfaces/event.interface';
 import { getAllEvent } from '@/server.actions';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ReactNode, useEffect, useState } from 'react';
 
 export default function Page() {
   const [data, setData] = useState<EventInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<EventInterface>();
+  const [action, setAction] = useState<ReactNode[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     async function handleData() {
       setLoading(true); // Start loading
       const data = await getAllEvent();
-      console.log(data);
+      // console.log(data);
       setData(data.data as unknown as EventInterface[]);
       setLoading(false); // End loading
     }
@@ -53,7 +57,17 @@ export default function Page() {
                     className="btn btn-neutral"
                     onClick={() => {
                       setModalOpen(true);
+                      router.prefetch(`/event/checkout/${e.slug}`)
                       setModalData(e);
+                      setAction([
+                        <Link
+                          key="checkout"
+                          href={`/event/checkout/${e.slug}`}
+                          className="btn btn-primary"
+                        >
+                          Checkout
+                        </Link>,
+                      ]);
                     }}
                   >
                     Detail
@@ -69,7 +83,7 @@ export default function Page() {
         id="event_modal"
         show={isModalOpen}
         onClose={() => setModalOpen(false)}
-        // closeButton={false}
+        actions={action}
       >
         <h3 className="card-title font-extrabold">{modalData?.title}</h3>
         <br />

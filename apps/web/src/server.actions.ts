@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import { User } from './stores/user/userAnnotation';
 import { EventInterface } from './interfaces/event.interface';
+import { UserComplete } from './interfaces/user.interface';
 
 const backEndUrl = process.env.BACKEND_URL;
 const apiKey = process.env.API_KEY!;
@@ -197,6 +198,75 @@ export async function getAllEvent(): Promise<{
       baseURL: backEndUrl,
     });
     res.data = data.data.data.data;
+    res.ok = true;
+  } catch (error: any) {
+    res.error = error.response;
+    res.ok = false;
+  }
+  return res;
+}
+
+export async function getSingleEvent(slug: string): Promise<{
+  ok: boolean;
+  data?: Object | null | {data: EventInterface};
+  error?: string | null | Array<any>;
+}> {
+  let res: {
+    ok: boolean;
+    data?: Object | null | {data: EventInterface};
+    error?: string | null | Array<any>;
+  } = {
+    ok: false,
+    data: null,
+  };
+  try {
+    if (!slug || slug === undefined || slug ==='') {
+      res.ok = false
+      res.data = null
+      return res
+    }
+    const data = await axiosInstance.get(`/event/${slug}`, {
+      
+      withCredentials: true,
+      signal: AbortSignal.timeout(8000),
+      baseURL: backEndUrl,
+    });
+    res.data = data.data.data.data;
+    res.ok = true;
+  } catch (error: any) {
+    res.error = error.response;
+    res.ok = false;
+  }
+  return res;
+}
+
+export async function getProfile(): Promise<{
+  ok: boolean;
+  data?: Object | null | {data: UserComplete};
+  error?: string | null | Array<any>;
+}> {
+  let res: {
+    ok: boolean;
+    data?: Object | null | {data: UserComplete};
+    error?: string | null | Array<any>;
+  } = {
+    ok: false,
+    data: null,
+  };
+  try {
+    // const verify = await verifyToken();
+    const token = cookies().get('auth_token')?.value as unknown as string;
+    const data = await axiosInstance.get(`/user/profile`, {
+      withCredentials: true,
+      signal: AbortSignal.timeout(8000),
+      baseURL: backEndUrl,
+      headers : {
+        Authorization : `Bearer ${token}`
+      }
+    });
+    // console.log(data.data.data);
+    
+    res.data = data.data.data;
     res.ok = true;
   } catch (error: any) {
     res.error = error.response;
