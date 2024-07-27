@@ -30,7 +30,7 @@ export async function signInProcess({
   password: string;
 }): Promise<{
   ok: boolean;
-  user: unknown | User | null;
+  user: unknown | User | null | UserComplete;
   error?: string | Array<any>;
 }> {
   let result: {
@@ -69,7 +69,7 @@ export async function signInProcess({
     delete jwtRes.payload.exp;
 
     result.ok = true;
-    result.user = jwtRes.payload as unknown as User;
+    result.user = (await getProfile()).data as UserComplete;
   } catch (error: any) {
     if (error.response) {
       result.error = error.response.data.error.errors as Array<any>;
