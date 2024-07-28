@@ -322,7 +322,7 @@ export function Navbar() {
                         Profile
                       </Link>
                     </li>
-                    <li>
+                   {state.user?.Organization[0].approvedAt? (<li>
                       <Link
                         href="/admin/dashboard"
                         className="justify-between"
@@ -330,7 +330,8 @@ export function Navbar() {
                       >
                         My Organization
                       </Link>
-                    </li>
+                    </li>) : ''}
+                   {/* <li>{}</li> */}
                     <li>
                       <button
                         onClick={() => {

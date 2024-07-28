@@ -1,4 +1,4 @@
-import { EventTransactionResult } from "./event.interface";
+import { EventTransactionResult } from './event.interface';
 
 export interface Coupon {
   id: number;
@@ -26,7 +26,7 @@ export interface UsersCoupon {
   createdAt?: Date | null;
   updatedAt?: Date | null;
   deletedAt?: Date | null;
-  Coupon  ?: Coupon
+  Coupon?: Coupon;
 }
 
 export interface UsersPointHistory {
@@ -54,8 +54,20 @@ export interface UserFromDBWithoutPassword {
   deletedAt: Date | null;
 }
 
+export interface UsersOrganizationInterface {
+  id: number;
+  name: string;
+  description: string | null;
+  ownerId: number | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
+  approvedAt: Date | null;
+}
+
 export interface UserComplete extends UserFromDBWithoutPassword {
-  UserPointHistory : UsersPointHistory[]
-  UsersCoupon : UsersCoupon[]
-  EventTransaction : EventTransactionResult[]
+  UserPointHistory: UsersPointHistory[];
+  UsersCoupon: UsersCoupon[];
+  EventTransaction: EventTransactionResult[];
+  Organization : UsersOrganizationInterface[]
 }

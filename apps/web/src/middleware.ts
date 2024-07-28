@@ -29,32 +29,20 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
     const userProfile = (await getProfileForMiddleware(req)).data as UserComplete
-    // const param = useParams<{ slug: string }>();
-
-    // const getCurrentEvent = req.nextUrl.pathname
     const getCurrentEvent = (await getSingleEvent(req.nextUrl.pathname.replace('/event/checkout/',''))).data as EventInterface;
-    // console.log(req.nextUrl.pathname.replace('/event/checkout/',''));
-    // console.log('get current event : '+getCurrentEvent.id);
-    // console.log('weasd');
-    // console.log(userProfile);
-    
-    
-    
-    // console.log('user profle  user profle user profle user profle : ');
-    // console.log('user profle  user profle user profle user profle : ' + JSON.stringify(userProfile));
-    
-    // const getCurrentEvent = (await getSingleEvent(param.slug)).data as EventInterface;
     if (userProfile) {
       const isRelatedTransactionExist = userProfile.EventTransaction.filter(
         (e) => e.eventId === getCurrentEvent.id,
       );
-      // console.log('isRelatedTransactionExist : ');
-      
-      // console.log(isRelatedTransactionExist);
-      
       if (isRelatedTransactionExist.length>0) {
         return NextResponse.redirect(new URL('/event', req.url));
       }
+    }
+  }
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    const userProfile = (await getProfileForMiddleware(req)).data as UserComplete
+    if (!userProfile.Organization[0].approvedAt) {
+      return NextResponse.redirect(new URL('/', req.url));
     }
   }
   // Clone the request headers and append the API key

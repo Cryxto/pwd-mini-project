@@ -16,6 +16,7 @@ class UserRepository {
     };
 
     try {
+      // const check = prisma.organization.findFirst()
       const data = await prisma.user.findUnique({
         where: {
           id: id,
@@ -33,7 +34,8 @@ class UserRepository {
             },
           },
           UserPointHistory: true,
-          EventTransaction: true
+          EventTransaction: true,
+          Organization: true
         },
       });
 

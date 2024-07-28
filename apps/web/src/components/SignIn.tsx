@@ -5,7 +5,7 @@ import {  signInProcess } from '@/server.actions';
 import { Bounce, toast } from 'react-toastify';
 import { useSafeBack } from '@/hooks';
 import { UserContext } from '@/stores/user/userContext';
-import { User } from '@/stores/user/userAnnotation';
+// import { User } from '@/stores/user/userAnnotation';
 import { UserComplete } from '@/interfaces/user.interface';
 
 export function SignIn() {
