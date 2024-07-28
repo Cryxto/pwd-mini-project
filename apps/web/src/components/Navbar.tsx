@@ -107,7 +107,7 @@ export function Navbar() {
   }, [state, loading]);
 
   return (
-    <nav className="navbar bg-base-100 flex justify-between items-center w-full lg:mx-5">
+    <nav className="navbar bg-base-100 flex justify-between items-center w-full lg:px-5">
       <div className="navbar-start">
         <div ref={mobileDropdownRef} className="dropdown">
           <button

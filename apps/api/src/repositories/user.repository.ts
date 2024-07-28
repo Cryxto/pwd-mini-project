@@ -25,11 +25,15 @@ class UserRepository {
         },
         include: {
           UsersCoupon: {
+            where: {
+              relatedTransactionId : null 
+            },
             include: {
               Coupon: true,
             },
           },
           UserPointHistory: true,
+          EventTransaction: true
         },
       });
 

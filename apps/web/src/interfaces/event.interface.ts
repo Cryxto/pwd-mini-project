@@ -1,5 +1,5 @@
 export interface EventInterface {
-  id: number
+  id: number;
   title: string;
   slug: string;
   content: string;
@@ -15,8 +15,9 @@ export interface EventInterface {
   enrollment: number;
   organizerId: number;
   media: string;
-  Organizer : OrganizationInterface;
-  Category : Category 
+  Organizer: OrganizationInterface;
+  Category: Category;
+  EventTransaction : EventTransactionResult[] | null | undefined
 }
 
 export interface OrganizationInterface {
@@ -27,7 +28,23 @@ export interface OrganizationInterface {
 }
 
 export interface Category {
-  id : number,
-  name : string
-  displayName : string
+  id: number;
+  name: string;
+  displayName: string;
+}
+
+export interface EventTransactionResult {
+  id: number;
+  eventId: number | null;
+  attendeeId: number | null;
+  review: string | null;
+  media: string | null;
+  ratings: number | null;
+  attendedAt: Date | null;
+  paidAt: Date | null;
+  uniqueCode: string | null;
+  finalPrices: number | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }

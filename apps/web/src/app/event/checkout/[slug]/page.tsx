@@ -1,6 +1,6 @@
 'use client';
 import { EventInterface } from '@/interfaces/event.interface';
-import { getSingleEvent } from '@/server.actions';
+import { getSingleEvent, makeTransaction } from '@/server.actions';
 import { useParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
@@ -11,10 +11,9 @@ export default function Page() {
   const [data, setData] = useState<EventInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedCoupon, setSelectedCoupon] = useState<UsersCoupon | null>(
-    null,
-  );
+  const [selectedCoupon, setSelectedCoupon] = useState<UsersCoupon | null>(null);
   const [usePoints, setUsePoints] = useState<boolean>(false);
+  const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
   const param = useParams<{ slug: string }>();
   const { state } = useContext(UserContext);
   const userData: UserComplete | null = state.user as UserComplete;
@@ -33,30 +32,44 @@ export default function Page() {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const handleConfirmPurchase = () => {
-    // Handle the purchase logic here
-    console.log('Purchase confirmed');
+  const handleConfirmPurchase = async () => {
+    if (!data) return;
+
+    const transactionResult = await makeTransaction({
+      usersCouponId: selectedCoupon?.id,
+      usePoint: usePoints,
+      eventId: data.id,
+      paymentDate: new Date(),
+    });
+
+    if (transactionResult.ok) {
+      setTransactionStatus('Transaction successful!');
+    } else {
+      setTransactionStatus(`Transaction failed: ${transactionResult.error}`);
+    }
+
     handleCloseModal();
   };
 
-  const availableCoupons =
-    userData?.UsersCoupon?.filter(
-      (coupon) =>
-        coupon.Coupon?.issuedBy === data?.organizerId ||
-        coupon.Coupon?.issuedBy === 1,
-    ) || [];
+  const availableCoupons = userData?.UsersCoupon?.filter(
+    (coupon) =>
+      coupon.Coupon?.issuedBy === data?.organizerId ||
+      coupon.Coupon?.issuedBy === 1
+  ) || [];
 
-  const userPoints =
-    userData?.UserPointHistory?.reduce(
-      (acc, pointHistory) => acc + (pointHistory.points || 0),
-      0,
-    ) || 0;
+  const userPoints = userData?.UserPointHistory?.reduce(
+    (acc, pointHistory) => acc + (pointHistory.points || 0),
+    0
+  ) || 0;
 
   const totalPrice = calculateTotalPrice(
     data?.basePrices || 0,
     selectedCoupon,
-    usePoints ? userPoints : 0,
+    usePoints ? userPoints : 0
   );
+
+  const isCouponInvalid = selectedCoupon && selectedCoupon.relatedTransactionId;
+  const isPointsInvalid = usePoints && userPoints === 0;
 
   return (
     <div className="flex flex-col items-center mx-4 my-20">
@@ -76,8 +89,8 @@ export default function Page() {
                   onChange={(e) =>
                     setSelectedCoupon(
                       availableCoupons.find(
-                        (coupon) => coupon.id === Number(e.target.value),
-                      ) || null,
+                        (coupon) => coupon.id === Number(e.target.value)
+                      ) || null
                     )
                   }
                 >
@@ -113,8 +126,9 @@ export default function Page() {
               </div>
               <div className="mt-4 max-w-full justify-end flex">
                 <button
-                  className="btn btn-primary self-end "
+                  className="btn btn-primary self-end"
                   onClick={handleOpenModal}
+                  disabled={isCouponInvalid as unknown as boolean || isPointsInvalid}
                 >
                   Proceed to Checkout
                 </button>
@@ -159,6 +173,11 @@ export default function Page() {
             </p>
             <p>Location: {data?.location || 'No location available'}</p>
           </Modal>
+          {transactionStatus && (
+            <div className="mt-4 p-4 border border-gray-200 rounded-md">
+              {transactionStatus}
+            </div>
+          )}
         </>
       )}
     </div>
@@ -169,7 +188,7 @@ export default function Page() {
 function calculateTotalPrice(
   basePrice: number,
   coupon: UsersCoupon | null,
-  points: number,
+  points: number
 ): number {
   let discount = 0;
 

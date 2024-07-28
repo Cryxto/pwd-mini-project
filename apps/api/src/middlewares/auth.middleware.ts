@@ -57,7 +57,9 @@ export default class AuthMiddleware {
       return res.status(401).send({ message: 'unauthorized' });
     }
     const jwtPayload = await verifyJWT(req.headers.authorization)
-    console.log(req.headers.authorization);
+    // console.log('JwtPayload');
+    
+    // console.log(jwtPayload);
     
     if (!jwtPayload) {
       return res.status(422).send({ message: 'authorization token being tempered' });

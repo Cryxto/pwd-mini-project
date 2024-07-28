@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { isLogin } from '@/lib';
+import { signOut, verifyToken } from './server.actions';
 
 const shouldNotSignedInRoutes = ['/sign-in', '/sign-up'];
 
@@ -14,7 +15,10 @@ export async function middleware(req: NextRequest) {
   }
 
   if (req.nextUrl.pathname.startsWith('/event/checkout')) {
-    if (!await isLogin(req)) {
+    if (!(await verifyToken()).ok) {
+      await signOut()
+    }
+    if (!(await isLogin(req))) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }

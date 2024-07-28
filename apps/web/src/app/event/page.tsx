@@ -6,7 +6,8 @@ import { EventInterface } from '@/interfaces/event.interface';
 import { getAllEvent } from '@/server.actions';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useContext, useEffect, useState } from 'react';
+import { UserContext } from '@/stores/user/userContext';
 
 export default function Page() {
   const [data, setData] = useState<EventInterface[]>([]);
@@ -15,6 +16,7 @@ export default function Page() {
   const [modalData, setModalData] = useState<EventInterface>();
   const [action, setAction] = useState<ReactNode[]>([]);
   const router = useRouter();
+  const { state } = useContext(UserContext);
 
   useEffect(() => {
     async function handleData() {
@@ -25,7 +27,7 @@ export default function Page() {
     }
 
     handleData();
-  }, []);
+  }, [state.user]);
 
   const formatDate = (date: Date) => {
     return `${date.toLocaleDateString('en-US', {
@@ -39,6 +41,30 @@ export default function Page() {
     })}`;
   };
 
+  const handleOpenModal = (event: EventInterface) => {
+    setModalOpen(true);
+    router.prefetch(`/event/checkout/${event.slug}`);
+    setModalData(event);
+
+    const isUserEnrolled = event.EventTransaction?.some(
+      (transaction) => transaction.attendeeId === state.user?.id,
+    );
+
+    if (isUserEnrolled) {
+      setAction([
+        <button key="enrolled" className="btn btn-disabled">
+          Enrolled
+        </button>,
+      ]);
+    } else {
+      setAction([
+        <Link key="checkout" href={`/event/checkout/${event.slug}`} className="btn btn-primary">
+          Checkout
+        </Link>,
+      ]);
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center items-center pb-20 pt-10">
       <h1 className="text-4xl pb-10 font-bold">All Event</h1>
@@ -46,46 +72,33 @@ export default function Page() {
         {loading ? (
           <span className="loading loading-spinner loading-lg"></span>
         ) : (
-          data.map((e) => (
-            <Card key={e.id} theImage={e.media}>
+          data.map((event) => (
+            <Card key={event.id} theImage={event.media}>
               <div className="flex flex-col justify-between h-full">
-                <h3 className="card-title font-extrabold">{e.title}</h3>
+                <h3 className="card-title font-extrabold">{event.title}</h3>
                 <br />
                 <div className="flex flex-wrap gap-2">
                   <div className="mb-2 badge badge-outline">
-                    {e.basePrices.toLocaleString('id-ID', {
+                    {event.basePrices.toLocaleString('id-ID', {
                       style: 'currency',
                       currency: 'IDR',
                     })}
                   </div>
                   <div className="mb-2 badge badge-neutral">
-                    {`${e.quota} available`}
+                    {`${event.quota} available`}
                   </div>
                   <div className="mb-2 badge badge-primary">
-                    {`${e.enrollment || 0} registered`}
+                    {`${event.enrollment || 0} registered`}
                   </div>
                   <div className="mb-2 badge badge-accent">
-                    {e.Category.displayName}
+                    {event.Category.displayName}
                   </div>
                 </div>
-                <p className="my-2">{e.content.slice(0, 100)}...</p>
+                <p className="my-2">{event.content.slice(0, 100)}...</p>
                 <div className="card-actions justify-end mt-auto">
                   <button
                     className="btn btn-neutral"
-                    onClick={() => {
-                      setModalOpen(true);
-                      router.prefetch(`/event/checkout/${e.slug}`);
-                      setModalData(e);
-                      setAction([
-                        <Link
-                          key="checkout"
-                          href={`/event/checkout/${e.slug}`}
-                          className="btn btn-primary"
-                        >
-                          Checkout
-                        </Link>,
-                      ]);
-                    }}
+                    onClick={() => handleOpenModal(event)}
                   >
                     Detail
                   </button>

@@ -10,6 +10,7 @@ export interface UserStateInterface {
 export interface User {
   id: number;
   username: string;
+  email: string;
   referalCode: string;
   firstName: string;
   lastName: string;

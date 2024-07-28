@@ -1,3 +1,5 @@
+import { EventTransactionResult } from "./event.interface";
+
 export interface Coupon {
   id: number;
   code?: string | null;
@@ -55,4 +57,5 @@ export interface UserFromDBWithoutPassword {
 export interface UserComplete extends UserFromDBWithoutPassword {
   UserPointHistory : UsersPointHistory[]
   UsersCoupon : UsersCoupon[]
+  EventTransaction : EventTransactionResult[]
 }
