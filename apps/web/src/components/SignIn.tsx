@@ -41,8 +41,8 @@ export function SignIn() {
           isSignIn: true
         }
       })
-      
-      setTimeout(() => safeBack(), 2000);
+      safeBack()
+      // setTimeout(() => safeBack(), 2000);
     } else {
       setStatus('fail');
 

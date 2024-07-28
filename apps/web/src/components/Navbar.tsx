@@ -43,6 +43,8 @@ const themes = [
 ];
 
 export function Navbar() {
+  // console.log(document.body.clientWidth);
+  
   const pathname = usePathname();
   const router = useRouter();
   const { state, dispatch, loading } = useContext(UserContext);
@@ -306,11 +308,11 @@ export function Navbar() {
                     ) : (
                       ''
                     )}
-                    {/* <li>
+                    {document.body.clientWidth<1007 ? (<li>
                       <span className="mr-2 lg:block">
                         {state.user?.username}
                       </span>
-                    </li> */}
+                    </li>): ''}
                     <li>
                       <Link
                         href="/profile"

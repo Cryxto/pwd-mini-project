@@ -261,12 +261,12 @@ export async function getSingleEvent(slug: string): Promise<{
 
 export async function getProfile(): Promise<{
   ok: boolean;
-  data?: Object | null | { data: UserComplete };
+  data?: Object | null | UserComplete 
   error?: string | null | Array<any>;
 }> {
   let res: {
     ok: boolean;
-    data?: Object | null | { data: UserComplete };
+    data?: Object | null | UserComplete 
     error?: string | null | Array<any>;
   } = {
     ok: false,
@@ -275,6 +275,10 @@ export async function getProfile(): Promise<{
 
   try {
     const tokenCookie = cookies().get('auth_token');
+    console.log('token cookue');
+    
+    console.log(tokenCookie);
+    
     const token = tokenCookie?.value as unknown as string;
 
     // Decode the original auth_token to get its expiration time

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { UserContext } from '@/stores/user/userContext';
+import { FaCalendarCheck } from "react-icons/fa";
 
 export default function Page() {
   const [data, setData] = useState<EventInterface[]>([]);
@@ -58,7 +59,11 @@ export default function Page() {
       ]);
     } else {
       setAction([
-        <Link key="checkout" href={`/event/checkout/${event.slug}`} className="btn btn-primary">
+        <Link
+          key="checkout"
+          href={`/event/checkout/${event.slug}`}
+          className="btn btn-primary"
+        >
           Checkout
         </Link>,
       ]);
@@ -93,6 +98,16 @@ export default function Page() {
                   <div className="mb-2 badge badge-accent">
                     {event.Category.displayName}
                   </div>
+                  {event.EventTransaction?.some(
+                    (transaction) => transaction.attendeeId === state.user?.id,
+                  ) ? (
+                    <div className="badge badge-success gap-2">
+                      <FaCalendarCheck />
+                      Enrolled
+                    </div>
+                  ) : (
+                    ''
+                  )}
                 </div>
                 <p className="my-2">{event.content.slice(0, 100)}...</p>
                 <div className="card-actions justify-end mt-auto">

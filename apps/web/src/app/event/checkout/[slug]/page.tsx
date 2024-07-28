@@ -1,11 +1,12 @@
 'use client';
 import { EventInterface } from '@/interfaces/event.interface';
 import { getSingleEvent, makeTransaction } from '@/server.actions';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import { UserContext } from '@/stores/user/userContext';
 import { UserComplete, UsersCoupon } from '@/interfaces/user.interface';
+import { Bounce, toast } from 'react-toastify';
 
 export default function Page() {
   const [data, setData] = useState<EventInterface | null>(null);
@@ -13,10 +14,11 @@ export default function Page() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<UsersCoupon | null>(null);
   const [usePoints, setUsePoints] = useState<boolean>(false);
-  const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
+  // const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
   const param = useParams<{ slug: string }>();
   const { state } = useContext(UserContext);
   const userData: UserComplete | null = state.user as UserComplete;
+  const router = useRouter()
 
   useEffect(() => {
     async function handleData() {
@@ -43,9 +45,32 @@ export default function Page() {
     });
 
     if (transactionResult.ok) {
-      setTransactionStatus('Transaction successful!');
+      toast.success('Transaction successful!', {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Bounce,
+      });
+      router.push('/event')
+      // setTransactionStatus('Transaction successful!');
     } else {
-      setTransactionStatus(`Transaction failed: ${transactionResult.error}`);
+      toast.error(`Transaction failed: ${transactionResult.error}`, {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Bounce,
+      });
+      // setTransactionStatus(`Transaction failed: ${transactionResult.error}`);
     }
 
     handleCloseModal();
@@ -173,11 +198,11 @@ export default function Page() {
             </p>
             <p>Location: {data?.location || 'No location available'}</p>
           </Modal>
-          {transactionStatus && (
+          {/* {transactionStatus && (
             <div className="mt-4 p-4 border border-gray-200 rounded-md">
               {transactionStatus}
             </div>
-          )}
+          )} */}
         </>
       )}
     </div>
