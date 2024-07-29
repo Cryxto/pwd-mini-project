@@ -41,6 +41,9 @@ export async function middleware(req: NextRequest) {
   }
   if (req.nextUrl.pathname.startsWith('/admin')) {
     const userProfile = (await getProfileForMiddleware(req)).data as UserComplete
+    if (userProfile.Organization.length === 0) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
     if (!userProfile.Organization[0].approvedAt) {
       return NextResponse.redirect(new URL('/', req.url));
     }

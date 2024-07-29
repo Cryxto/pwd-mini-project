@@ -184,7 +184,7 @@ export async function signOut(): Promise<boolean> {
   return status;
 }
 
-export async function getAllEvent(): Promise<{
+export async function getAllEvent({ category, location, title, content }: { category?: string,  location?: string, title ?: string, content?:string }): Promise<{
   ok: boolean;
   data?: Array<any> | null | { data: EventInterface };
   error?: string | null | Array<any>;
@@ -211,7 +211,8 @@ export async function getAllEvent(): Promise<{
       withCredentials: true,
       signal: AbortSignal.timeout(8000),
       baseURL: backEndUrl,
-      ...(token?theHeader: {})
+      ...(token?theHeader: {}),
+      params :{category, location, title, content}
     });
     res.data = data.data.data.data;
     res.ok = true;

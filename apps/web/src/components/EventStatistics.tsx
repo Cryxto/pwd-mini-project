@@ -18,7 +18,7 @@ import {
 } from 'chart.js';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Event } from '@/stores/dashboard/dashboardAnnotation';
+// import { Event } from '@/stores/dashboard/dashboardAnnotation';
 
 // Register all necessary components
 ChartJS.register(

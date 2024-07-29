@@ -492,7 +492,7 @@ async function main() {
       couponCreated,
     });
 
-    const bulk = await createUserInDB(80);
+    const bulk = await createUserInDB(30);
     const orgs = await prisma.organization.findMany();
 
     // const events = await prisma.$transaction(async (pr) => {
@@ -511,9 +511,13 @@ async function main() {
         async (e) =>
           {
             if (e.approvedAt) {
-              return await prisma.event.create({
-                data: await makeEvent(e.id),
-              })
+              let bulk = []
+              for (let i = 0; i < 10; i++) {
+                bulk.push(await prisma.event.create({
+                  data: await makeEvent(e.id),
+                }))
+              }
+              return bulk
             }
           }
       ),
