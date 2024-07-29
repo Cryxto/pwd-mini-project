@@ -9,45 +9,42 @@ import EventStatistics from './EventStatistics';
 
 export function Dashboard() {
   const { state } = useContext(DashboardContext);
-  const [activeTab, setActiveTab] = useState('events');
+  const [activeTab, setActiveTab] = useState<'events' | 'statistics'>('events');
+
+  // Helper function to safely access event length
+  const getEventLength = () => {
+    const events = state.Organization?.Event;
+    if (!events) return 0;
+    return Array.isArray(events) ? events.length : 1;
+  };
 
   return (
-    <div className="flex justify-center mx-10 my-10">
-      <div role="tablist" className="tabs tabs-lifted max-w-full w-full">
-        {/* Events Tab */}
-        <input
-          type="radio"
-          name="dashboard_tabs"
+    <div className="flex flex-col items-center mx-10 my-10">
+      <div role="tablist" className="tabs tabs-boxed">
+        <button
           role="tab"
-          className="tab font-bold"
-          aria-label="Events"
-          checked={activeTab === 'events'}
-          onChange={() => setActiveTab('events')}
-        />
-        <div
-          role="tabpanel"
-          className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full"
+          aria-controls="events-tab"
+          aria-selected={activeTab === 'events'}
+          className={`tab ${activeTab === 'events' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('events')}
         >
-          {/* Tab content 1 */}
-          {activeTab === 'events' && <EventList />}
-
-        </div>
-        {/* Statistics Tab */}
-        <input
-          type="radio"
-          name="dashboard_tabs"
+          Events
+        </button>
+        <button
           role="tab"
-          className="tab font-bold"
-          aria-label="Statistics"
-          checked={activeTab === 'statistics'}
-          onChange={() => setActiveTab('statistics')}
-        />
-        <div
-          role="tabpanel"
-          className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full"
+          aria-controls="statistics-tab"
+          aria-selected={activeTab === 'statistics'}
+          className={`tab ${activeTab === 'statistics' ? 'tab-active' : ''}`}
+          onClick={() => setActiveTab('statistics')}
         >
-          {activeTab === 'statistics' && <EventStatistics />}
-        </div>
+          Statistics
+        </button>
+      </div>
+      <div id="events-tab" role="tabpanel" className={`tab-content bg-base-100 border-base-300 rounded-box p-6 w-full ${activeTab === 'events' ? 'block' : 'hidden'}`}>
+        {activeTab === 'events' && <EventList />}
+      </div>
+      <div id="statistics-tab" role="tabpanel" className={`tab-content bg-base-100 border-base-300 rounded-box p-6 w-full ${activeTab === 'statistics' ? 'block' : 'hidden'}`}>
+        {activeTab === 'statistics' && <EventStatistics />}
       </div>
     </div>
   );

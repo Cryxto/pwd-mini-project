@@ -1,11 +1,10 @@
+// components/EventList.tsx
 'use client';
 
 import { useContext, useState } from 'react';
 import { DashboardContext } from '@/stores/dashboard/dashboardContext';
 import Modal from '@/components/Modal';
-import { Event, EventTransaction, Attendee } from '@/stores/dashboard/dashboardAnnotation';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { Event } from '@/stores/dashboard/dashboardAnnotation';
 
 interface ModalContentProps {
   event: Event;
@@ -20,20 +19,18 @@ const ModalContent = ({ event, type }: ModalContentProps) => {
 
     return (
       <div>
-        <h2 className="text-xl font-bold">Attendees for {event.title}</h2>
+        <h2 className="text-xl font-bold mb-2">Attendees for {event.title}</h2>
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
               </tr>
             </thead>
             <tbody>
-              {attendees.map((attendee: Attendee) => (
+              {attendees.map(attendee => (
                 <tr key={attendee.id}>
-                  <td>{attendee.id}</td>
                   <td>{attendee.firstName} {attendee.lastName}</td>
                   <td>{attendee.email}</td>
                 </tr>
@@ -51,22 +48,20 @@ const ModalContent = ({ event, type }: ModalContentProps) => {
       : [event.EventTransaction];
 
     return (
-      <div>
-        <h2 className="text-xl font-bold">Transactions for {event.title}</h2>
-        <div className="overflow-x-auto">
+      <div className='max-w-full w-full'>
+        <h2 className="text-xl font-bold mb-2">Transactions for {event.title}</h2>
+        <div className="">
           <table className="table w-full">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Unique Code</th>
-                <th>Final Price</th>
-                <th>Date Paid</th>
+                <th>Code</th>
+                <th>Price</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction: EventTransaction) => (
+              {transactions.map(transaction => (
                 <tr key={transaction.id}>
-                  <td>{transaction.id}</td>
                   <td>{transaction.uniqueCode}</td>
                   <td>{transaction.finalPrices}</td>
                   <td>{new Date(transaction.paidAt).toLocaleDateString()}</td>
@@ -86,8 +81,8 @@ const EventList = () => {
   const { state } = useContext(DashboardContext);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalType, setModalType] = useState<'attendees' | 'transactions' | null>(null);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const handleModalClose = () => {
     setSelectedEvent(null);
@@ -99,7 +94,6 @@ const EventList = () => {
     setModalType(type);
   };
 
-  // Filter events based on date range
   const events = Array.isArray(state.Organization?.Event)
     ? state.Organization?.Event
     : state.Organization?.Event ? [state.Organization?.Event] : [];
@@ -113,28 +107,29 @@ const EventList = () => {
   });
 
   return (
-    <>
-      <div className="mb-4 flex space-x-2">
-        <DatePicker
-          selected={startDate || undefined} // Convert null to undefined
-          onChange={date => setStartDate(date as Date)}
-          selectsStart
-          startDate={startDate || undefined} // Convert null to undefined
-          endDate={endDate || undefined} // Convert null to undefined
-          placeholderText="Start Date"
-          className="input input-bordered"
-        />
-        <DatePicker
-          selected={endDate || undefined} // Convert null to undefined
-          onChange={date => setEndDate(date as Date)}
-          selectsEnd
-          startDate={startDate || undefined} // Convert null to undefined
-          endDate={endDate || undefined} // Convert null to undefined
-          placeholderText="End Date"
-          className="input input-bordered"
-        />
+    <div className='overflow-x-auto'>
+      <div className="mb-4 flex flex-col sm:flex-row items-center">
+        <div className="form-control w-full sm:w-1/4 mb-2 sm:mb-0">
+          <label className="label">
+            <span className="label-text">Start Date</span>
+          </label>
+          <input
+            type="date"
+            className="input input-bordered"
+            onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : undefined)}
+          />
+        </div>
+        <div className="form-control w-full sm:w-1/4 mb-2 sm:mb-0 sm:ml-2">
+          <label className="label">
+            <span className="label-text">End Date</span>
+          </label>
+          <input
+            type="date"
+            className="input input-bordered"
+            onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : undefined)}
+          />
+        </div>
       </div>
-
       <div className="overflow-x-auto">
         <table className="table table-compact w-full">
           <thead>
@@ -146,12 +141,12 @@ const EventList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredEvents.map((event) => (
+            {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.title}</td>
                 <td>{event.eventType}</td>
                 <td>{new Date(event.heldAt).toLocaleDateString()}</td>
-                <td>
+                <td className='flex flex-wrap gap-2'>
                   <button className="btn btn-sm" onClick={() => openModal(event, 'attendees')}>View Attendees</button>
                   <button className="btn btn-sm" onClick={() => openModal(event, 'transactions')}>View Transactions</button>
                 </td>
@@ -160,13 +155,13 @@ const EventList = () => {
           </tbody>
         </table>
       </div>
-      
+
       {selectedEvent && modalType && (
         <Modal id="event-modal" show={!!selectedEvent} onClose={handleModalClose}>
           <ModalContent event={selectedEvent} type={modalType} />
         </Modal>
       )}
-    </>
+    </div>
   );
 };
 

@@ -83,9 +83,9 @@ const EventStatistics = () => {
   };
 
   return (
-    <div>
+    <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Event Statistics</h2>
-      <div className="mb-4 flex space-x-2">
+      <div className="mb-4 flex flex-wrap gap-2">
         <DatePicker
           selected={startDate ?? undefined}  // Use nullish coalescing operator
           onChange={(date) => setStartDate(date as Date | null)}
@@ -93,7 +93,7 @@ const EventStatistics = () => {
           startDate={startDate ?? undefined}  // Use nullish coalescing operator
           endDate={endDate ?? undefined}  // Use nullish coalescing operator
           placeholderText="Start Date"
-          className="input input-bordered"
+          className="input input-bordered w-full max-w-xs"
         />
         <DatePicker
           selected={endDate ?? undefined}  // Use nullish coalescing operator
@@ -102,7 +102,7 @@ const EventStatistics = () => {
           startDate={startDate ?? undefined}  // Use nullish coalescing operator
           endDate={endDate ?? undefined}  // Use nullish coalescing operator
           placeholderText="End Date"
-          className="input input-bordered"
+          className="input input-bordered w-full max-w-xs"
         />
       </div>
       {chartData && (

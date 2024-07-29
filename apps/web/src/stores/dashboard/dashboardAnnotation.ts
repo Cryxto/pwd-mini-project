@@ -31,6 +31,7 @@ export interface EventTransaction {
 }
 
 export interface Event {
+  attendee: any;
   id: number;
   organizerId: number;
   title: string;
