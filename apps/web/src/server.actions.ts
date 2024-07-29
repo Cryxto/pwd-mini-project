@@ -8,6 +8,7 @@ import {
   EventTransactionResult,
 } from './interfaces/event.interface';
 import { UserComplete } from './interfaces/user.interface';
+import { Organization } from './stores/dashboard/dashboardAnnotation';
 
 const backEndUrl = process.env.BACKEND_URL;
 const apiKey = process.env.API_KEY!;
@@ -275,9 +276,9 @@ export async function getProfile(): Promise<{
 
   try {
     const tokenCookie = cookies().get('auth_token');
-    console.log('token cookue');
+    // console.log('token cookue');
     
-    console.log(tokenCookie);
+    // console.log(tokenCookie);
     
     const token = tokenCookie?.value as unknown as string;
 
@@ -385,4 +386,50 @@ export async function makeTransaction({
     // return data;
   }
   return data;
+}
+
+export async function getDashboardData() : Promise<{
+  ok: boolean;
+  data?: Object | null | Organization 
+  error?: string | null | Array<any>;
+}> {
+  let res: {
+    ok: boolean;
+    data?: Object | null | Organization 
+    error?: string | null | Array<any>;
+  } = {
+    ok: false,
+    data: null,
+  };
+
+  try {
+    const tokenCookie = cookies().get('auth_token');
+    
+    const token = tokenCookie?.value as unknown as string;
+
+    // Decode the original auth_token to get its expiration time
+
+    // Get the new profile data
+    const data = await axiosInstance.get(`/event/dashboard`, {
+      withCredentials: true,
+      signal: AbortSignal.timeout(8000),
+      baseURL: backEndUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log('data dashboard');
+    
+    // console.log(data.data.dashboardData.data[0]);
+    
+    res.data = data.data.dashboardData.data[0];
+    res.ok = true;
+  } catch (error: any) {
+    console.log(error);
+
+    res.error = error.response;
+    res.ok = false;
+  }
+
+  return res;
 }

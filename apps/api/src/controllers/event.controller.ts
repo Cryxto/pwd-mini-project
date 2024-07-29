@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { eventRepository } from '@/repositories/event.repository';
 import { verifyJWT } from '@/utils/jwt.utils';
 import { JwtPayload } from 'jsonwebtoken';
+import { DashboardRepository } from '@/repositories/dashboard.repository';
 
 export class EventController {
   public async getAllEvent (req: Request, res: Response): Promise<void | Response> {
@@ -53,5 +54,18 @@ export class EventController {
       error: data.error,
       ok: false
     })
+  }
+
+  public async getEventDashboard (req: Request, res: Response): Promise<void | Response> {
+    
+    const ownerId = req.body.jwtPayload as JwtPayload
+
+    const organization = new DashboardRepository(Number(ownerId.id) as number)
+    const dashboardData  = await organization.getEventDashboardData()
+
+    if (!dashboardData.ok) {
+      return res.status(404).send({message : 'not found'})
+    }
+    return res.status(200).send({dashboardData})
   }
 }

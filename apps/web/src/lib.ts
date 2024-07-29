@@ -44,7 +44,7 @@ export async function getProfileForMiddleware(req: NextRequest): Promise<{
   try {
     const tokenCookie = req.cookies.get('auth_token')?.value;
     // console.log('token cookue : ' + tokenCookie);
-    console.log(tokenCookie);
+    // console.log(tokenCookie);
     
     const token = tokenCookie as unknown as string;
 

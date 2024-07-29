@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
+import "react-datepicker/dist/react-datepicker.css";
 import { UserProvider } from '@/stores/user/userProvider';
 import { CheckAuth } from '@/components/CheckAuth';
 import { ThemeProvider } from '@/stores/theme/themeProvider';

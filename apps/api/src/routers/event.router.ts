@@ -17,6 +17,7 @@ export class EventRouter {
   private initializeRoutes(): void {
     this.router.post('/transaction',
     this.authMiddleware.shouldSignIn ,this.eventController.makeTransaction);
+    this.router.get('/dashboard',this.authMiddleware.shouldSignIn, this.eventController.getEventDashboard);
     this.router.get('/:slug',this.authMiddleware.shouldSignIn, this.eventController.getSingleEvent);
     this.router.get('/', this.eventController.getAllEvent);
   }

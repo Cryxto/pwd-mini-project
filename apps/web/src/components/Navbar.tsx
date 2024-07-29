@@ -322,7 +322,7 @@ export function Navbar() {
                         Profile
                       </Link>
                     </li>
-                   {state.user?.Organization[0].approvedAt? (<li>
+                   {state.user?.Organization[0] && state.user?.Organization[0].approvedAt? (<li>
                       <Link
                         href="/admin/dashboard"
                         className="justify-between"
