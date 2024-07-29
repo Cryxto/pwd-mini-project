@@ -1,11 +1,16 @@
+import { UserComplete } from "@/interfaces/user.interface";
+
 export interface UserStateInterface {
-  user: User | null;
+  user: UserComplete | null;
+  // profile ?: UserComplete | null
   isSignIn: boolean;
 }
+
 
 export interface User {
   id: number;
   username: string;
+  email: string;
   referalCode: string;
   firstName: string;
   lastName: string;
@@ -25,4 +30,5 @@ export type UserActionType =
 export const initialUserState: UserStateInterface = {
   user: null,
   isSignIn: false,
+  // profile : null
 };

@@ -1,5 +1,7 @@
+import { verifyJWT } from '@/utils/jwt.utils';
 import { SignInSchema, SignUpSchema } from '@/validations/auth.validation';
 import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
 export default class AuthMiddleware {
   /**
@@ -50,9 +52,19 @@ export default class AuthMiddleware {
     res: Response,
     next: NextFunction,
   ): Promise<void | Response> {
-    if (req.cookies.verification && req.cookies.auth_token) {
-      return res.send({ cookies: req.cookies });
+    if (!req.headers.authorization) {
+      // return res.send({ message: 'hola' });
+      return res.status(401).send({ message: 'unauthorized' });
     }
-    return res.status(401).send({ message: 'unauthorized' });
+    const jwtPayload = await verifyJWT(req.headers.authorization)
+    // console.log('JwtPayload');
+    
+    // console.log(jwtPayload);
+    
+    if (!jwtPayload) {
+      return res.status(422).send({ message: 'authorization token being tempered' });
+    }
+    req.body.jwtPayload  = jwtPayload as jwt.JwtPayload
+    next()
   }
 }

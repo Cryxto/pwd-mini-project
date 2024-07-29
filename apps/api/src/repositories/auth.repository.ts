@@ -32,16 +32,17 @@ class AuthRepository {
       delete record.referal;
 
       const bonuses = {
-        UserPointHistory: {
-          create: {
-            expiredAt: await setDateNowAndAddMonth(3),
-            refererId: getBonus ? referalBelongsTo?.id : null,
-            points: 10000,
-          },
-        },
+        // UserPointHistory: {
+        //   create: {
+        //     expiredAt: await setDateNowAndAddMonth(3),
+        //     refererId: getBonus ? referalBelongsTo?.id : null,
+        //     points: 10000,
+        //   },
+        // },
         UsersCoupon: {
           create: {
-            couponId: 1,
+            couponId: 2,
+            refererId : referalBelongsTo?.id,
             //createdBy: 1,
             expiredAt: await setDateNowAndAddMonth(3),
           },
@@ -55,53 +56,53 @@ class AuthRepository {
             ...additional,
             ...(getBonus ? bonuses : {}),
             //createdBy: 1,
-            Organization: {
-              create: {
-                description: 'Hola',
-                //createdBy: 1,
-                name:
-                  record.firstName +
-                  ' ' +
-                  `${record.middleName ?? ''}` +
-                  ' ' +
-                  record.lastName +
-                  ' Organization',
-                OrganizationRole: {
-                  create: {
-                    name: additional.referalCode + 'ownership',
-                    description: 'Hola',
-                    displayName: additional.referalCode + ' Ownership',
-                    //createdBy: 1,
-                    OrganizationRoleHavePermission: {
-                      createMany: {
-                        data: [
-                          {
-                            permissionId: 2,
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-              },
-            },
+            // Organization: {
+            //   create: {
+            //     description: 'Hola',
+            //     //createdBy: 1,
+            //     name:
+            //       record.firstName +
+            //       ' ' +
+            //       `${record.middleName ?? ''}` +
+            //       ' ' +
+            //       record.lastName +
+            //       ' Organization',
+            //     OrganizationRole: {
+            //       create: {
+            //         name: additional.referalCode + 'ownership',
+            //         description: 'Hola',
+            //         displayName: additional.referalCode + ' Ownership',
+            //         //createdBy: 1,
+            //         OrganizationRoleHavePermission: {
+            //           createMany: {
+            //             data: [
+            //               {
+            //                 permissionId: 2,
+            //               },
+            //             ],
+            //           },
+            //         },
+            //       },
+            //     },
+            //   },
+            // },
           },
-          include: {
-            Organization: {
-              include: {
-                OrganizationRole: true,
-              },
-            },
-          },
+          // include: {
+          //   Organization: {
+          //     include: {
+          //       OrganizationRole: true,
+          //     },
+          //   },
+          // },
         });
 
-        await pr.userHaveRoleOnOrganization.create({
-          data: {
-            userId: newUser.id,
-            organizationRoleId: newUser.Organization[0].OrganizationRole[0].id,
-            //createdBy: 1,
-          },
-        });
+        // await pr.userHaveRoleOnOrganization.create({
+        //   data: {
+        //     userId: newUser.id,
+        //     organizationRoleId: newUser.Organization[0].OrganizationRole[0].id,
+        //     //createdBy: 1,
+        //   },
+        // });
         if (getBonus && referalBelongsTo?.username!=='system') {
 
           await pr.userPointHistory.create({
