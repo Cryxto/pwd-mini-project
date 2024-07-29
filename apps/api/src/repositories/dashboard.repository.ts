@@ -23,6 +23,7 @@ export class DashboardRepository {
             ownerId : this.user
           },
           include : {
+            Owner :true,
             Event : {
               include : {
                 EventTransaction : {
