@@ -1,5 +1,3 @@
-// components/EventStatistics.tsx
-
 'use client';
 
 import { useContext, useEffect, useState } from 'react';
@@ -18,7 +16,6 @@ import {
 } from 'chart.js';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-// import { Event } from '@/stores/dashboard/dashboardAnnotation';
 
 // Register all necessary components
 ChartJS.register(
@@ -30,11 +27,19 @@ ChartJS.register(
   Legend
 );
 
+const granularityOptions = [
+  { label: 'Day', value: 'day' },
+  { label: 'Week', value: 'week' },
+  { label: 'Month', value: 'month' },
+  { label: 'Year', value: 'year' },
+];
+
 const EventStatistics = () => {
   const { state } = useContext(DashboardContext);
   const [chartData, setChartData] = useState<ChartData<'bar', number[]> | null>(null);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [granularity, setGranularity] = useState<'day' | 'week' | 'month' | 'year'>('month');
 
   useEffect(() => {
     if (state.Organization?.Event) {
@@ -42,6 +47,7 @@ const EventStatistics = () => {
         ? state.Organization.Event
         : [state.Organization.Event];
 
+      // Filter events by date range
       const filteredEvents = events.filter(event => {
         const eventDate = new Date(event.heldAt);
         if (startDate && endDate) {
@@ -50,21 +56,50 @@ const EventStatistics = () => {
         return true;
       });
 
-      const labels = filteredEvents.map(event => event.title);
-      const data = filteredEvents.map(event => (Array.isArray(event.EventTransaction) ? event.EventTransaction.length : 1));
+      // Aggregate data
+      const aggregateData = filteredEvents.reduce((acc: { [key: string]: number }, event) => {
+        const transactions = Array.isArray(event.EventTransaction) ? event.EventTransaction : [event.EventTransaction];
+        transactions.forEach(transaction => {
+          const transactionDate = new Date(transaction.paidAt);
+          const key = getKey(transactionDate, granularity);
+          acc[key] = (acc[key] || 0) + 1; // Count transactions
+        });
+        return acc;
+      }, {});
+
+      // Prepare chart data
+      const labels = Object.keys(aggregateData);
+      const data = Object.values(aggregateData);
 
       setChartData({
         labels,
         datasets: [
           {
-            label: 'Number of Transactions',
+            label: 'Average Transactions',
             data,
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
           },
         ],
       });
     }
-  }, [state.Organization, startDate, endDate]);
+  }, [state.Organization, startDate, endDate, granularity]);
+
+  const getKey = (date: Date, granularity: 'day' | 'week' | 'month' | 'year') => {
+    switch (granularity) {
+      case 'day':
+        return date.toISOString().split('T')[0]; // YYYY-MM-DD
+      case 'week':
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+        return startOfWeek.toISOString().split('T')[0]; // Start of the week YYYY-MM-DD
+      case 'month':
+        return `${date.getFullYear()}-${date.getMonth() + 1}`; // YYYY-M
+      case 'year':
+        return date.getFullYear().toString(); // YYYY
+      default:
+        return '';
+    }
+  };
 
   const options: ChartOptions<'bar'> = {
     responsive: true,
@@ -104,6 +139,17 @@ const EventStatistics = () => {
           placeholderText="End Date"
           className="input input-bordered w-full max-w-xs"
         />
+        <select
+          value={granularity}
+          onChange={(e) => setGranularity(e.target.value as 'day' | 'week' | 'month' | 'year')}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {granularityOptions.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
       {chartData && (
         <Bar data={chartData} options={options} />

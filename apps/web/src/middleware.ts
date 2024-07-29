@@ -9,6 +9,7 @@ import { UserComplete } from './interfaces/user.interface';
 import { EventInterface } from './interfaces/event.interface';
 
 const shouldNotSignedInRoutes = ['/sign-in', '/sign-up'];
+const shouldSignedInRoutes = ['/profile','/admin', '/admin/dashboard','/event/checkout'];
 
 export async function middleware(req: NextRequest) {
   const apiKey = process.env.API_KEY!;
@@ -17,6 +18,11 @@ export async function middleware(req: NextRequest) {
   if (shouldNotSignedInRoutes.includes(req.nextUrl.pathname)) {
     if (await isLogin(req)) {
       return NextResponse.redirect(new URL('/', req.url));
+    }
+  }
+  if (shouldSignedInRoutes.includes(req.nextUrl.pathname)) {
+    if (!await isLogin(req)) {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }
 
