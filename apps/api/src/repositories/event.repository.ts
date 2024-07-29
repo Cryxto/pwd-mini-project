@@ -2,26 +2,58 @@ import prisma from '@/prisma';
 import crypto from 'crypto';
 
 class EventRepository {
-  async allEvent({category, userId}:{category?: string, userId?: number}): Promise<{
+  async allEvent({ category, userId, location, title, content }: { category?: string, userId?: number, location?: string, title?:string, content?: string }): Promise<{
     ok: boolean;
     error?: any;
     data?: object | null;
   }> {
     try {
+      const whereClause: any = {
+        deletedAt: null,
+      };
+  
+      if (location) {
+        whereClause.OR = [
+          ...(whereClause.OR || []),
+          { location: { contains: location } }
+        ];
+      }
+      if (title) {
+        whereClause.OR = [
+          ...(whereClause.OR || []),
+          { title: { contains: title } }
+        ];
+      }
+      if (content) {
+        whereClause.OR = [
+          ...(whereClause.OR || []),
+          { content: { contains: content } }
+        ];
+      }
+  
+      if (category) {
+        whereClause.OR = [
+          ...(whereClause.OR || []),
+          { Category: { name: { contains: category } } },
+          { Category: { displayName: { contains: category } } }
+        ];
+      }
+  
       const events = await prisma.event.findMany({
-        where: {
-          deletedAt: null,
-        },
+        where: whereClause,
+        // orderBy :{
+        //   registrationStartedAt : 'asc',
+        // },
         include: {
           Organizer: true,
           Category: true,
-          EventTransaction : {
-            where : {
-              attendeeId : userId===undefined? undefined: userId
-            }
-          }
+          EventTransaction: userId !== undefined ? {
+            where: { attendeeId: userId }
+          } : true
         },
       });
+      // console.log(events);
+  
       return {
         ok: true,
         data: events,
@@ -33,6 +65,7 @@ class EventRepository {
       };
     }
   }
+  
   async singleEvent(slug: string): Promise<{
     ok: boolean;
     error?: any;

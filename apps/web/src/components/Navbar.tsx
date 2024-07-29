@@ -250,8 +250,8 @@ export function Navbar() {
         ) : (
           <>
             {!isMobileDropdownOpen && state.isSignIn ? (
-              <span className="mr-2 hidden lg:block">
-                {state.user?.username}
+              <span className="mr-2 hidden lg:block font-bold">
+                Welcome {state.user?.lastName} !
               </span>
             ) : (
               ''
@@ -309,8 +309,8 @@ export function Navbar() {
                       ''
                     )}
                     {document.body.clientWidth<1007 ? (<li>
-                      <span className="mr-2 lg:block">
-                        {state.user?.username}
+                      <span className="mr-2 lg:block font-bold">
+                        Welcome {state.user?.lastName} !
                       </span>
                     </li>): ''}
                     <li>

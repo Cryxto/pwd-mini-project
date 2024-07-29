@@ -7,6 +7,7 @@ export const useSafeBack = () => {
     if (document.referrer && document.referrer.includes(window.location.origin)) {
       router.back();
     } else {
+      router.refresh()
       router.push('/');
     }
   };
