@@ -11,9 +11,15 @@ export async function verifyJWT(
   token: string,
 ): Promise<string | jwt.JwtPayload | boolean> {
   try {
+    // console.log(JWT_SECRET);
+    
     const decoded = jwt.verify(token.replace('Bearer ', ''), JWT_SECRET!);
+    console.log(decoded);
+    
     return decoded;
   } catch (error) {
+    console.log(error);
+    
     return false;
   }
 }

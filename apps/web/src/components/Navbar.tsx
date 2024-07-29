@@ -43,6 +43,8 @@ const themes = [
 ];
 
 export function Navbar() {
+  // console.log(document.body.clientWidth);
+  
   const pathname = usePathname();
   const router = useRouter();
   const { state, dispatch, loading } = useContext(UserContext);
@@ -107,13 +109,16 @@ export function Navbar() {
   }, [state, loading]);
 
   return (
-    <nav className="navbar bg-base-100 flex justify-between items-center w-full">
+    <nav className="navbar bg-base-100 flex justify-between items-center w-full lg:px-5">
       <div className="navbar-start">
         <div ref={mobileDropdownRef} className="dropdown">
           <button
             tabIndex={0}
             className="btn btn-ghost lg:hidden"
-            onClick={() => setMobileDropdownOpen(!isMobileDropdownOpen)}
+            onClick={() => {
+              setMobileDropdownOpen(!isMobileDropdownOpen);
+              router.prefetch('/event');
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -135,15 +140,15 @@ export function Navbar() {
             className={`menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}
           >
             <li>
-              <Link href="/search-event" onClick={handleMobileLinkClick}>
-                Search Event
+              <Link href="/event" onClick={handleMobileLinkClick}>
+                Event
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/category" onClick={handleMobileLinkClick}>
                 Category
               </Link>
-            </li>
+            </li> */}
             <li ref={themeDropdownRef}>
               <button
                 tabIndex={0}
@@ -189,20 +194,20 @@ export function Navbar() {
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link
-              href="/search-event"
+              href="/event"
               className={`btn btn-ghost w-full text-left ${pathname === '/search-event' ? 'underline' : ''}`}
             >
-              Search Event
+              Event
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               href="/category"
               className={`btn btn-ghost w-full text-left ${pathname === '/category' ? 'underline' : ''}`}
             >
               Category
             </Link>
-          </li>
+          </li> */}
           <li ref={themeDropdownRef} className="relative">
             <button
               tabIndex={0}
@@ -303,11 +308,11 @@ export function Navbar() {
                     ) : (
                       ''
                     )}
-                    {/* <li>
+                    {document.body.clientWidth<1007 ? (<li>
                       <span className="mr-2 lg:block">
                         {state.user?.username}
                       </span>
-                    </li> */}
+                    </li>): ''}
                     <li>
                       <Link
                         href="/profile"
@@ -317,6 +322,16 @@ export function Navbar() {
                         Profile
                       </Link>
                     </li>
+                   {state.user?.Organization[0] && state.user?.Organization[0].approvedAt? (<li>
+                      <Link
+                        href="/admin/dashboard"
+                        className="justify-between"
+                        onClick={handleProfileLinkClick}
+                      >
+                        My Organization
+                      </Link>
+                    </li>) : ''}
+                   {/* <li>{}</li> */}
                     <li>
                       <button
                         onClick={() => {

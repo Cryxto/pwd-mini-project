@@ -5,7 +5,8 @@ import {  signInProcess } from '@/server.actions';
 import { Bounce, toast } from 'react-toastify';
 import { useSafeBack } from '@/hooks';
 import { UserContext } from '@/stores/user/userContext';
-import { User } from '@/stores/user/userAnnotation';
+// import { User } from '@/stores/user/userAnnotation';
+import { UserComplete } from '@/interfaces/user.interface';
 
 export function SignIn() {
   const [identifier, setIdentifier] = useState('');
@@ -36,12 +37,12 @@ export function SignIn() {
       dispatch({
         type: 'SIGN_IN',
         payload: {
-          user : res.user as User,
+          user : res.user as UserComplete,
           isSignIn: true
         }
       })
-      
-      setTimeout(() => safeBack(), 2000);
+      safeBack()
+      // setTimeout(() => safeBack(), 2000);
     } else {
       setStatus('fail');
 

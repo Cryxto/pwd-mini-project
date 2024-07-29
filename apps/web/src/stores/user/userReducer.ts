@@ -6,12 +6,14 @@ export const userReducer = (state:UserStateInterface, action: UserActionType)=>{
       return {
         ...state, 
         user: action.payload.user,
+        // profile : action.payload.profile,
         isSignIn: action.payload.isSignIn
       }
     case "SIGN_OUT" :
       return {
         ...state,
         user : null,
+        profile : null,
         isSignIn : false
       }
     case "INFO":

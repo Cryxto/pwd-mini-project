@@ -56,22 +56,25 @@ async function createUserSeed(): Promise<UserSeedInterface> {
 }
 
 async function makeEvent(orgId: number) {
+  const title = faker.lorem.words(3)
   return {
-    title: faker.lorem.words(3),
-    slug: faker.lorem.slug(),
+    title: title,
+    slug: title.toLowerCase().split(' ').join('-'),
     content: faker.lorem.paragraphs(2),
     eventType: EventType.PAID,
     categoryId: faker.helpers.arrayElement(categories).id,
-    heldAt: faker.date.future({ refDate: await setDateNowAndAddMonth(3) }),
-    registrationStartedAt: faker.date.recent(),
-    registrationClosedAt: faker.date.future({
-      refDate: await setDateNowAndAddMonth(5),
+    heldAt: faker.date.soon({ refDate: await setDateNowAndAddMonth(2), days:20 }),
+    registrationStartedAt: faker.date.recent({days:10}),
+    registrationClosedAt: faker.date.soon({
+      refDate: await setDateNowAndAddMonth(1),
+      days: 20
     }),
     location: faker.location.city(),
     locationLink: faker.internet.url(),
-    quota: faker.number.int({ min: 100, max: 200 }),
-    basePrices: parseFloat(faker.commerce.price({ min: 50000, max: 1000000 })),
-    enrollment: faker.number.int({ min: 0, max: 99 }),
+    quota: faker.number.int({ min: 10, max: 100 }),
+    basePrices: parseFloat(faker.commerce.price({ min: 50000, max: 100000 })),
+    media : faker.image.url(),
+    // enrollment: faker.number.int({ min: 0, max: 99 }),
     organizerId: orgId,
   };
 }
@@ -91,6 +94,7 @@ export async function createUserInDB(howMany: number = 5) {
     const users = await createUserSeedBulk(howMany);
     const createdUsers = [];
     let reff: string | null = null;
+    let approved: boolean = false;
 
     for (const [i, record] of users.entries()) {
       const additional = {
@@ -107,26 +111,68 @@ export async function createUserInDB(howMany: number = 5) {
       console.log(referalBelongsTo);
 
       if (referalBelongsTo) {
+        
         getBonus = true;
       }
       delete record.referal;
 
       const bonuses = {
-        UserPointHistory: {
-          create: {
-            expiredAt: await setDateNowAndAddMonth(3),
-            refererId: getBonus ? referalBelongsTo?.id : null,
-            points: 10000,
-          },
-        },
+        // UserPointHistory: {
+        //   create: {
+        //     expiredAt: await setDateNowAndAddMonth(3),
+        //     refererId: getBonus ? referalBelongsTo?.id : null,
+        //     points: 10000,
+        //   },
+        // },
         UsersCoupon: {
           create: {
-            couponId: 1,
+            couponId: 2,
             //createdBy: 1,
+            refererId: referalBelongsTo?.id,
             expiredAt: await setDateNowAndAddMonth(3),
+
           },
         },
       };
+      // const orgData: {
+      //   description: string;
+      //   name: string;
+      //   approvedAt: Date | null;
+      //   OrganizationRole: {
+      //     create: {
+      //       name: string;
+      //       description: string;
+      //       displayName: string;
+      //       OrganizationRoleHavePermission: {
+      //         createMany: {
+      //           data: {
+      //             permissionId: number;
+      //           }[];
+      //         };
+      //       };
+      //     };
+      //   };
+      // } = {
+      //   description: 'Hola',
+      //   name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
+      //   approvedAt: approved ? new Date() : null,
+      //   OrganizationRole: {
+      //     create: {
+      //       name: `${additional.referalCode}ownership`,
+      //       description: 'Hola',
+      //       displayName: `${additional.referalCode} Ownership`,
+      //       OrganizationRoleHavePermission: {
+      //         createMany: {
+      //           data: [
+      //             {
+      //               permissionId: 2,
+      //             },
+      //           ],
+      //         },
+      //       },
+      //     },
+      //   },
+      // };
 
       const createdUser = await prisma.$transaction(async (pr) => {
         const newUser = await pr.user.create({
@@ -135,11 +181,13 @@ export async function createUserInDB(howMany: number = 5) {
             ...additional,
             ...(getBonus ? bonuses : {}),
             //createdBy: 1,
+            // ...(approved? orgData: {}),
             Organization: {
               create: {
                 description: 'Hola',
                 //createdBy: 1,
                 name: `${record.firstName} ${record.middleName ?? ''} ${record.lastName} Organization`,
+                approvedAt : (approved? new Date(): null),
                 OrganizationRole: {
                   create: {
                     name: `${additional.referalCode}ownership`,
@@ -195,10 +243,12 @@ export async function createUserInDB(howMany: number = 5) {
       createdUsers.push({
         ...createdUser,
       });
+      reff = createdUser.referalCode;
       if (i % 2 === 0) {
-        reff = createdUser.referalCode;
+        approved = true
       } else {
-        reff = null;
+        // reff = null;
+        approved = false
       }
     }
 
@@ -362,6 +412,7 @@ async function main() {
         name: 'myEvent',
         description: 'Default organization description',
         ownerId: 1,
+        approvedAt : new Date()
         //createdBy: 1,
       },
     });
@@ -375,21 +426,34 @@ async function main() {
       },
     });
 
-    const coupon = prisma.coupon.create({
-      data: {
-        id: 1,
-        code: crypto.randomBytes(7).toString('hex').toUpperCase(),
-        //createdBy: 1,
-        issuedBy: 1,
-        monthCouponAlive: 3,
-        title: 'New Comer Welcome',
-        description: 'Get 10% discount to desired event',
-        discount: 10,
-        unit: 'percent',
-      },
+    const coupon = prisma.coupon.createMany({
+      data: [
+        {
+          id: 1,
+          code: crypto.randomBytes(7).toString('hex').toUpperCase(),
+          //createdBy: 1,
+          issuedBy: 1,
+          monthCouponAlive: 3,
+          title: 'New Comer Welcome',
+          description: 'Get 10% discount to desired event',
+          discount: 10,
+          unit: 'percent',
+        },
+        {
+          id: 2,
+          code: crypto.randomBytes(7).toString('hex').toUpperCase(),
+          //createdBy: 1,
+          issuedBy: 1,
+          monthCouponAlive: 3,
+          title: 'Success Invite Someone',
+          description: 'Get 10% discount to desired event',
+          discount: 10,
+          unit: 'percent',
+        },
+      ],
     });
 
-    const category = prisma.category.createMany({data: categories})
+    const category = prisma.category.createMany({ data: categories });
 
     // Wait for all promises to complete before committing the transaction
     const [
@@ -402,7 +466,7 @@ async function main() {
       organizationResult,
       roleAssignment,
       couponCreated,
-      categoryCreated
+      categoryCreated,
     ] = await prisma.$transaction([
       superuser,
       superUserUpdate,
@@ -413,7 +477,7 @@ async function main() {
       organization,
       assignSuperuserRole,
       coupon,
-      category
+      category,
     ]);
 
     console.log({
@@ -428,7 +492,7 @@ async function main() {
       couponCreated,
     });
 
-    const bulk = await createUserInDB(40);
+    const bulk = await createUserInDB(80);
     const orgs = await prisma.organization.findMany();
 
     // const events = await prisma.$transaction(async (pr) => {
@@ -443,9 +507,16 @@ async function main() {
     // });
 
     const events = await Promise.all(
-      orgs.map(async (e) => await prisma.event.create({
-        data: await makeEvent(e.id),
-      }))
+      orgs.filter(
+        async (e) =>
+          {
+            if (e.approvedAt) {
+              return await prisma.event.create({
+                data: await makeEvent(e.id),
+              })
+            }
+          }
+      ),
     );
 
     console.log(bulk);
