@@ -34,7 +34,11 @@ class UserRepository {
             },
           },
           UserPointHistory: true,
-          EventTransaction: true,
+          EventTransaction: {
+            include : {
+              Event : true
+            }
+          },
           Organization: true
         },
       });

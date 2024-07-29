@@ -65,9 +65,32 @@ export interface UsersOrganizationInterface {
   approvedAt: Date | null;
 }
 
+export interface UsersEventInterface {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  eventType: string;
+  categoryId: number;
+  heldAt: Date;
+  registrationStartedAt: Date;
+  registrationClosedAt: Date;
+  location: string;
+  locationLink: string;
+  quota: string;
+  basePrices: number;
+  enrollment: number;
+  organizerId: number;
+  media: string;
+}
+
+export interface UsersEventTransactionResult extends EventTransactionResult{
+  Event : UsersEventInterface
+}
+
 export interface UserComplete extends UserFromDBWithoutPassword {
   UserPointHistory: UsersPointHistory[];
   UsersCoupon: UsersCoupon[];
-  EventTransaction: EventTransactionResult[];
+  EventTransaction: UsersEventTransactionResult[];
   Organization : UsersOrganizationInterface[]
 }

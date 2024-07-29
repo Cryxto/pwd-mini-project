@@ -56,6 +56,7 @@ export default function Page() {
         theme: 'colored',
         transition: Bounce,
       });
+      router.refresh()
       router.push('/event')
       // setTransactionStatus('Transaction successful!');
     } else {
